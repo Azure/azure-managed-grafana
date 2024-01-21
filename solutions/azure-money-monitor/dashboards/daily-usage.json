@@ -1,0 +1,392 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 29,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "azmoney"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 25,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "currencyUSD"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 13,
+          "w": 14,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "9.5.13",
+        "targets": [
+          {
+            "OpenAI": false,
+            "database": "bill",
+            "datasource": {
+              "type": "grafana-azure-data-explorer-datasource",
+              "uid": "azmoney"
+            },
+            "expression": {
+              "from": {
+                "property": {
+                  "name": "week",
+                  "type": "string"
+                },
+                "type": "property"
+              },
+              "groupBy": {
+                "expressions": [],
+                "type": "and"
+              },
+              "reduce": {
+                "expressions": [],
+                "type": "and"
+              },
+              "where": {
+                "expressions": [],
+                "type": "and"
+              }
+            },
+            "pluginVersion": "4.7.0",
+            "query": "week\n| where $__timeFilter(UsageDateTime)\n| summarize DailyUsage=sum(PreTaxCost) by UsageDateTime",
+            "querySource": "raw",
+            "queryType": "KQL",
+            "rawMode": true,
+            "refId": "A",
+            "resultFormat": "table"
+          }
+        ],
+        "title": "Total daily usage",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "azmoney"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 25,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "currencyUSD"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 13,
+          "w": 14,
+          "x": 0,
+          "y": 13
+        },
+        "id": 2,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "9.5.13",
+        "targets": [
+          {
+            "OpenAI": false,
+            "database": "bill",
+            "datasource": {
+              "type": "grafana-azure-data-explorer-datasource",
+              "uid": "azmoney"
+            },
+            "query": "week\r\n| where $__timeFilter(UsageDateTime)\r\n| summarize DailyUsage=sum(PreTaxCost) by UsageDateTime, ResourceLocation",
+            "rawMode": true,
+            "refId": "A",
+            "resultFormat": "table"
+          }
+        ],
+        "title": "Daily usage by resource location",
+        "transformations": [
+          {
+            "id": "partitionByValues",
+            "options": {
+              "fields": [
+                "ResourceLocation"
+              ]
+            }
+          }
+        ],
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "grafana-azure-data-explorer-datasource",
+          "uid": "azmoney"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 25,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "smooth",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "currencyUSD"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 13,
+          "w": 14,
+          "x": 0,
+          "y": 26
+        },
+        "id": 3,
+        "options": {
+          "legend": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "9.5.13",
+        "targets": [
+          {
+            "OpenAI": false,
+            "database": "bill",
+            "datasource": {
+              "type": "grafana-azure-data-explorer-datasource",
+              "uid": "azmoney"
+            },
+            "query": "week\r\n| where $__timeFilter(UsageDateTime)\r\n| summarize DailyUsage=sum(PreTaxCost) by UsageDateTime, ResourceType",
+            "rawMode": true,
+            "refId": "A",
+            "resultFormat": "table"
+          }
+        ],
+        "title": "Daily usage by resource type",
+        "transformations": [
+          {
+            "id": "partitionByValues",
+            "options": {
+              "fields": [
+                "ResourceType"
+              ]
+            }
+          }
+        ],
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 38,
+    "tags": [
+      "azure-money-monitor",
+      "azure-cost-insights"
+    ],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-7d",
+      "to": "now-2d"
+    },
+    "timepicker": {
+      "hidden": false,
+      "nowDelay": "",
+      "refresh_intervals": [
+        "1m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ]
+    },
+    "timezone": "utc",
+    "title": "Daily usage",
+    "uid": "c153c12d-7a50-424a-8758-c1a943a31f43",
+    "version": 3,
+    "weekStart": ""
+  }
