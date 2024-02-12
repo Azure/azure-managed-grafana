@@ -57,23 +57,19 @@ kubectl get nodes
 ```
 
 
-# Install Prometheus and Grafana
+# Install Prometheus
  
 
-Prometheus can be installed either by using Helm or by using the official operator step by step. We’ll use the Helm chart because it’s quick and easy.
-
- 
-
-The operator is part of the kube-prometheus project, which is a set of Kubernetes manifests that will not only install Prometheus but also configure Grafana to be used along with it and make all the components highly available. Let’s install Prometheus using Helm.
+One really popular way of installing Prometheus is through the [prometheus-operator](https://prometheus-operator.dev/), which provides Kubernetes native deployment and management of [Prometheus](https://prometheus.io/) and related monitoring components. We are going to use the [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) helm chart to deploy the prometheus-operator.
 
  
 
 Add its repository to our repository list and update it.
 ```
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-
 helm repo update
 ```
+
 Install the Helm chart into a namespace called monitoring, which will be created automatically.
 ```
 helm install prometheus \
