@@ -18,6 +18,11 @@ Sign into the Azure CLI by running the login command.
 az login
 ```
 
+If you have multiple Azure subscriptions, you can select your Azure subscription with this command.
+```
+az account set -s <your-azure-subscription-id>
+```
+
 Install or update kubectl.
 ```
 az aks install-cli
@@ -25,13 +30,13 @@ az aks install-cli
 
 Create two bash/zsh variables which we will use in subsequent commands. You may change the syntax below if you are using another shell.
 ```
-RESOURCE_GROUP=aks-prometheus
-AKS_NAME=aks1
+RESOURCE_GROUP=amg-mpe-sample-rg
+AKS_NAME=mpe-target-aks
 ```
 
-Create a resource group. We have chosen to create this in the eastus Azure region.
+Create a resource group. We have chosen to create this in the westcentralus Azure region.
 ```
-az group create --name $RESOURCE_GROUP --location eastus
+az group create --name $RESOURCE_GROUP --location westcentralus
 ```
 
 Create a new AKS cluster using the az aks create command. Here we create a 3 node cluster using the B-series Burstable VM type which is cost-effective and suitable for small test/dev workloads such as this.
