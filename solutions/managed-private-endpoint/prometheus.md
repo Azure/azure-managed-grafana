@@ -85,7 +85,7 @@ helm install prometheus \
 
 The helm command will prompt you to check on the status of the deployed pods.
 ```
-kubectl --namespace monitoring get pods -l "release=prometheus"
+kubectl --namespace monitoring get pods
 ```
 
 Make sure the pods all "Running" before you continue. If in the unlikely circumstance they do not reach the running state, you may want to troubleshoot them.
@@ -95,4 +95,21 @@ Azure [Private Link service](https://learn.microsoft.com/en-us/azure/private-lin
 ```
 kubectl --namespace monitoring apply -f pls-prometheus-svc.yaml
 ```
+
+After a few minutes, you will be able to see the private link service with name `promManagedPls` being created in the AKS managed resource group.
+![AKS created Private Link Service](attachments/pls-prometheus.png)
+
 # Connect with managed private endpoint
+You can use [Azure portal to create an Azure Managed Grafana](https://learn.microsoft.com/en-us/azure/managed-grafana/quickstart-managed-grafana-portal) easily. After this, we can create a [managed private endpoint](https://learn.microsoft.com/en-us/azure/managed-grafana/how-to-connect-to-data-source-privately) to connect to the private link service.
+1. Create a new managed private endpoint by clicking 'Network' -> 'Managed Private Endpoint' -> 'Create'.
+![Create mpe](attachments/create-mpe.png)
+2. After select 'Private link services' in the target resource type, you can select the private link service with name `promManagedPls` created in the above step. Each managed private endpoint will get a private IP address. You can also provide a domain name for this managed private endpoint. The AMG service will ensure that this domain will be resolved to the managed private endpoint's private IP inside the AMG environment. e.g. I am setting the domain as `*.prom.my-own-domain.com`.
+![Prometheus mpe info](attachments/pls-mpe-create-info.png)
+3. Approve the private endpoint connection inside the private link service Azure portal UI.
+![Approve pls connection](attachments/pls-approve-connection.png)
+4. After the private endpoint connection is approved, please click the 'Refresh' button to synchronize the `Connection state`. It should show as 'Approved' in the `Connection state`.
+![Sync mpe status](attachments/mpe-sync.png)
+5. Add Prometheus data source in Grafana UI. The URL can be `http://prom-service.prom.my-own-domain.com:9090`.
+![mpe Prometheus data source](attachments/mpe-prom-datasource.png)
+6. Try the data source using sample '[Node Explorter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)' dashboard. You can import the dashboard with Id `1860` to leverage the self-hosted Promethues.
+![Sample Prometheus dashboard](attachments/prom-sample-dashboard-1860.png)

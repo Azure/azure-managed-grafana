@@ -13,7 +13,7 @@ spec:
   selector:
     # app: myApp
     app.kubernetes.io/name: prometheus
-    prometheus: prom-rel-kube-prometheus-s-prometheus
+    prometheus: prometheus-kube-prometheus-prometheus
   ports:
     - name: http-web
       protocol: TCP
