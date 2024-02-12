@@ -86,5 +86,8 @@ kubectl --namespace monitoring get pods -l "release=prometheus"
 Make sure the pods all "Running" before you continue. If in the unlikely circumstance they do not reach the running state, you may want to troubleshoot them.
 
 # Add a private link service to the Prometheus server
-
+Azure [Private Link service](https://learn.microsoft.com/en-us/azure/private-link/private-link-service-overview) allows consuming your Kubernetes service through private link across different Azure virtual networks. AKS has a [native integration with Azure Private Link Service](https://cloud-provider-azure.sigs.k8s.io/topics/pls-integration/) that you can easily annotate a Kubernets service object to create a corresponding private link service azure resource.
+```
+kubectl --namespace monitoring apply -f pls-prometheus-svc.yaml
+```
 # Connect with managed private endpoint
