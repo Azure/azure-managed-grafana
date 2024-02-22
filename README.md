@@ -6,7 +6,7 @@ This repo contains [issues](https://github.com/Azure/azure-managed-grafana/issue
 
 | Title | Link |
 |-|-|
-| [**GitHub** for logging issues](https://aka.ms/amg/issues) | https://aka.ms/amg/issues |
+| [**GitHub** for logging issues](https://aka.ms/managed-grafana/issues) | https://aka.ms/managed-grafana/issues |
 
 ## API and SDK reference
 
