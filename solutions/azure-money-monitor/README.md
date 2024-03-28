@@ -20,11 +20,16 @@ The Azure Money Monitor offers an advanced client-side solution designed to empo
 
 The Azure Money Monitor redefines the way organizations and individuals track and optimize their Azure expenditures. By offering a blend of detailed data access, customization flexibility, and comprehensive analysis tools, it stands out as an essential utility for anyone looking to enhance their financial oversight in the Azure ecosystem.
 
-# Getting Started
+# Get started
 1. [Install docker](https://docs.docker.com/get-docker/). To make initial onboarding easier, we have provided a container image for you to run at any platform.
 1. Get an [Azure subscription](https://azure.microsoft.com/en-us/free) and ensure you have owner role on this Azure subscription. Please also remember the subscription Id e.g. `ad2ba586-1dc4-40de-b0e9-f8d6e08c9f59`. The Azure Money Monitor tool will create all the resources for analyzing the billing data inside this Azure subscription.
-1. Run the Azure Money Monitor on your Azure subscription.
+1. Run the Azure Money Monitor on your Azure subscription. 
 
 ```
 docker run azmoney.azurecr.io/azure-money-monitor:0.9 -s <subscription Id> --use-device-code
 ```
+1. Access the billing data in the provisioned Azure Data Explorer and Azure Managed Grafana.
+![Provisioned azure resources](attachments/provisioned-resources.png)
+# Get involved
+* Doc link: https://aka.ms/azure-money-monitor
+* Issues & feedback: https://aka.ms/managed-grafana/issues
