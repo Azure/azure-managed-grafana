@@ -26,7 +26,7 @@ The Azure Money Monitor redefines the way organizations and individuals track an
 1. Run the Azure Money Monitor on your Azure subscription. 
 
 ```
-docker run azmoney.azurecr.io/azure-money-monitor:0.9 -s <subscription Id> --use-device-code
+docker run azmoney.azurecr.io/azure-money-monitor:1.0 -s <subscription Id> --use-device-code
 ```
 1. Access the billing data in the provisioned Azure Data Explorer and Azure Managed Grafana.
 ![Provisioned azure resources](attachments/provisioned-resources.png)
