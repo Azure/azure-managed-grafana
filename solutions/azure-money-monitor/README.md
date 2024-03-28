@@ -26,5 +26,5 @@ The Azure Money Monitor redefines the way organizations and individuals track an
 1. Run the Azure Money Monitor on your Azure subscription.
 
 ```
-docker run azmoney.azurecr.io/azure-money-monitor:0.8 -s <subscription Id> --use-device-code
+docker run azmoney.azurecr.io/azure-money-monitor:0.9 -s <subscription Id> --use-device-code
 ```
