@@ -30,6 +30,13 @@ docker run azmoney.azurecr.io/azure-money-monitor:1.0 -s <subscription Id> --use
 ```
 1. Access the billing data in the provisioned Azure Data Explorer and Azure Managed Grafana.
 ![Provisioned azure resources](attachments/provisioned-resources.png)
+
+# Clean up all bill exports
+You can remove all the bill export setup by running the below command:
+```
+docker run azmoney.azurecr.io/azure-money-monitor:1.0 -s <subscription Id> --use-device-code --clean
+```
+
 # Get involved
 * Doc link: https://aka.ms/azure-money-monitor
 * Issues & feedback: https://aka.ms/managed-grafana/issues
