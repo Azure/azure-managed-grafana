@@ -2,6 +2,44 @@
 
 Azure Managed Grafana is a fully managed service that provides Grafana as a service in Azure. It offers a powerful data visualization and monitoring platform that allows you to create, explore, and share dashboards with your team. Built on the popular open-source Grafana project, Azure Managed Grafana eliminates the overhead of hosting and managing your own Grafana instance while providing enterprise-grade security, scalability, and reliability.
 
+## Getting Started
+
+### Prerequisites
+
+Before you begin with Azure Managed Grafana, ensure you have:
+
+- An active Azure subscription ([Get a free account](https://azure.microsoft.com/free/))
+- Appropriate permissions to create and manage Azure resources
+- Basic familiarity with Azure portal or Azure CLI
+
+### Quick Setup
+
+1. **Create an Azure Managed Grafana instance**
+   - Using Azure Portal: [Create a managed Grafana instance](https://learn.microsoft.com/en-us/azure/managed-grafana/quickstart-managed-grafana-portal)
+   - Using Azure CLI: [Create with CLI](https://learn.microsoft.com/en-us/azure/managed-grafana/quickstart-managed-grafana-cli)
+
+2. **Access your Grafana instance**
+   - Navigate to your Azure Managed Grafana resource in the Azure portal
+   - Click on the "Endpoint" URL to access your Grafana dashboard
+   - Sign in using your Azure Active Directory credentials
+
+3. **Connect your first data source**
+   - In Grafana, go to **Configuration** > **Data Sources**
+   - Add Azure Monitor as your first data source to visualize Azure metrics
+   - Follow the [data source configuration guide](https://learn.microsoft.com/en-us/azure/managed-grafana/how-to-data-source-plugins-managed-identity)
+
+4. **Create your first dashboard**
+   - Click **Create** > **Dashboard** 
+   - Add a panel and select your data source
+   - Build queries to visualize your Azure resources
+
+### Next Steps
+
+- Explore our [solution examples](./solutions) for real-world scenarios
+- Set up [private networking](./solutions/managed-private-endpoint) for secure connections
+- Try the [Azure Money Monitor](./solutions/azure-money-monitor) to track your Azure spending
+- Configure [alerts and notifications](https://learn.microsoft.com/en-us/azure/managed-grafana/how-to-create-alerts)
+
 ## Key Features
 
 - **Fully Managed**: No need to manage infrastructure, updates, or maintenance
