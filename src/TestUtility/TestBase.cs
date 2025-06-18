@@ -130,16 +130,21 @@ namespace TestUtility
 
         private void GenerateLogger(string testClass, bool useAppInsights, ITestOutputHelper output = null)
         {
-            var loggerConfig = new LoggerConfiguration()
-                .Enrich.WithProperty("TestClassName", testClass)
-                .Enrich.WithProperty("UnitTestessionId", Guid.NewGuid().ToString())
-                .Enrich.WithProperty("UnitTestStartTime", DateTime.UtcNow.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture));
+            UnitTestSessionContext unitTestSessionContext = new UnitTestSessionContext()
+            {
+                TestClassName = testClass,
+            };
+
+            var loggerConfig = new LoggerConfiguration();
 
             loggerConfig = loggerConfig.WriteTo.TestCorrelator();
 
             if (useAppInsights)
             {
                 var builder = _appInsightsConfig.TelemetryProcessorChainBuilder;
+
+                _appInsightsConfig.TelemetryInitializers.Add(new UnitTestSessionTelemetryInitializer(unitTestSessionContext));
+
                 builder.Build();
 
                 _depModule = new DependencyTrackingTelemetryModule();
