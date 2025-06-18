@@ -1,6 +1,6 @@
 # Azure Managed Grafana
 
-Azure Managed Grafana is a fully managed service that provides Grafana as a service in Azure. It offers a powerful data visualization and monitoring platform that allows you to create, explore, and share dashboards with your team. Built on the popular open-source Grafana project, Azure Managed Grafana eliminates the overhead of hosting and managing your own Grafana instance while providing enterprise-grade security, scalability, and reliability.
+Azure Managed Grafana is a fully managed service that provides Grafana as a service in Azure. It offers a powerful data visualization and monitoring platform that allows you to create, explore, and share dashboards with your team. Built on the popular open source Grafana project, Azure Managed Grafana eliminates the overhead of hosting and managing your own Grafana instance while providing enterprise-grade security, scalability, and reliability.
 
 ## Key Features
 
@@ -16,11 +16,11 @@ Azure Managed Grafana is a fully managed service that provides Grafana as a serv
 - **IoT Data Visualization**: Visualize telemetry data from IoT devices and sensors
 - **Custom Dashboards**: Build tailored dashboards for specific teams or use cases
 
-This repository contains [issues](https://github.com/Azure/azure-managed-grafana/issues) for collecting user feedback, samples, troubleshooting tips, and a collection of useful resources for Azure Managed Grafana.
+This repository contains [issues](https://github.com/Azure/azure-managed-grafana/issues) for collecting user feedback, samples, troubleshooting tips, and useful resources for Azure Managed Grafana.
 
 ## Providing feedback
 
-We welcome your feedback! This repository's [issues section](https://github.com/Azure/azure-managed-grafana/issues) is specifically designed for collecting user feedback, feature requests, bug reports, and general questions about Azure Managed Grafana. Please use the issues to:
+We welcome your feedback! This repository's [issues section](https://github.com/Azure/azure-managed-grafana/issues) is specifically designed for collecting user feedback, feature requests, bug reports, and general questions about Azure Managed Grafana. Please use issues to:
 
 - Report bugs or technical issues
 - Request new features or enhancements
@@ -37,4 +37,4 @@ We welcome your feedback! This repository's [issues section](https://github.com/
 * [REST API Reference](https://learn.microsoft.com/en-us/rest/api/managed-grafana/)
 * [Swagger Specification](https://github.com/Azure/azure-rest-api-specs/blob/master/specification/dashboard/resource-manager/Microsoft.Dashboard/stable/2023-09-01/grafana.json)
 * [SDK for .NET](https://www.nuget.org/packages/Azure.ResourceManager.Grafana)
-* [SDK for .NET-Source](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/grafana/Azure.ResourceManager.Grafana)
+* [SDK for .NET - Source](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/grafana/Azure.ResourceManager.Grafana)
