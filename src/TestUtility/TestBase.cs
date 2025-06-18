@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using System.Linq;
 using System.Threading;
+using Microsoft.ApplicationInsights.DataContracts;
 
 namespace TestUtility
 {
@@ -21,6 +22,7 @@ namespace TestUtility
         };
         private DependencyTrackingTelemetryModule _depModule;
         private TelemetryClient _appInsightsClient;
+        private readonly IOperationHolder<RequestTelemetry> _currentOperation;
         private bool _disposed = false;
         private readonly ITestCorrelatorContext _testCorrelatorContext;
 
@@ -54,11 +56,18 @@ namespace TestUtility
                     string[] parts = Test.DisplayName.Split('.');
                     TestClassName = parts[parts.Length - 2];
                     TestMethodName = parts[parts.Length - 1];
+
+                    operationName = $"{TestClassName}-{TestMethodName}";
                 }
             }
             catch
             {
                 operationName = testClass;
+            }
+
+            if (!string.IsNullOrEmpty(operationName) && useAppInsights)
+            {
+                _currentOperation = _appInsightsClient.StartOperation<RequestTelemetry>(operationName);
             }
         }
 
@@ -92,6 +101,8 @@ namespace TestUtility
             }
 
             _disposed = true;
+
+            _currentOperation?.Dispose();
 
             try
             {
