@@ -77,7 +77,8 @@ namespace TestUtility
             }
             else if (IsFailure == true)
             {
-                deleteResourceGroup = false;
+                // set this to false if we want to keep the resource group for failed test investigation.
+                deleteResourceGroup = true;
             }
 
             if (deleteResourceGroup)
