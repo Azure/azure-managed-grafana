@@ -26,7 +26,7 @@ namespace ResourceManagementTests
         {
             try
             {
-                string grafanaName = "mygrafana01";
+                string grafanaName = RandomNameGenerator.GenerateGrafanaName();
 
                 var grafanaData = new ManagedGrafanaData(TestLocation)
                 {
