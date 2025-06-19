@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      AzureUnitTestSubscriptionId: 'd320f99c-3d38-41c8-89d6-021f326613b8'
     
     steps:
     - uses: actions/checkout@v4
