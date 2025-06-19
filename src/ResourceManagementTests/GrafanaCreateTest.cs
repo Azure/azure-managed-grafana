@@ -48,6 +48,8 @@ namespace ResourceManagementTests
                             grafanaData);
 
                 ManagedGrafanaResource grafana = op.Value;
+
+                Assert.Equal("Standard", grafana.Data.SkuName);
             }
             catch (Exception ex)
             {
