@@ -6,6 +6,8 @@ using System;
 using System.Runtime.CompilerServices;
 using Xunit.Abstractions;
 using Azure.ResourceManager;
+using System.Collections.Generic;
+using Azure.ResourceManager.Resources.Models;
 
 namespace TestUtility
 {
@@ -35,6 +37,7 @@ namespace TestUtility
                     ResourceGroupCollection resourceGroups = DefaultSubscription.GetResourceGroups();
 
                     ResourceGroupData resourceGroupData = new ResourceGroupData(TestLocation);
+                    resourceGroupData.AppendTags(Tags);
 
                     var operation = resourceGroups.CreateOrUpdate(WaitUntil.Completed, ResourceGroupName, resourceGroupData);
 
@@ -61,6 +64,8 @@ namespace TestUtility
         public ResourceGroupResource TestResourceGroup { get; }
 
         public TokenCredential TokenCredential { get; }
+
+        public Dictionary<string, string> Tags { get; } = new Dictionary<string, string>(TestCommon.Tags);
 
         public override void Dispose()
         {
