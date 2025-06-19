@@ -79,6 +79,8 @@ namespace TestUtility
 
         public string TestMethodName { get; }
 
+        public string DateTimeStr { get; } = DateTime.UtcNow.ToString("MMddHmmss", CultureInfo.InvariantCulture);
+
         public bool? IsFailure { get; private set; }
 
         public Serilog.Events.LogEvent[] GetLogEvents() => TestCorrelator.GetLogEventsFromContextGuid(_testCorrelatorContext.Guid).ToArray();
