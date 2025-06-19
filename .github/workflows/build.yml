@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      AzureUnitTestSubscriptionId: 'd320f99c-3d38-41c8-89d6-021f326613b8'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore src/AzureManagedGrafana.Samples.sln
+    
+    - name: Build
+      run: dotnet build src/AzureManagedGrafana.Samples.sln --no-restore --configuration Release
+    
+    - name: Test
+      run: dotnet test src/AzureManagedGrafana.Samples.sln --no-build --configuration Release --verbosity normal
+      continue-on-error: true  # Tests may fail without Azure credentials
