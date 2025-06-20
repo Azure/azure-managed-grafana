@@ -104,15 +104,18 @@ namespace TestUtility
 
             _disposed = true;
 
-            _currentOperation?.Dispose();
-
             try
             {
                 var theExceptionThrownByTest = TestExceptionHelper.TestException;
                 if (theExceptionThrownByTest != null)
                 {
                     IsFailure = true;
-                    Logger.Error(theExceptionThrownByTest, $"test_failure. {TestClassName}");
+                    Logger.Error(theExceptionThrownByTest, $"test_failure. {theExceptionThrownByTest.Message}");
+                    
+                    if (_currentOperation != null)
+                    {
+                        _currentOperation?.Telemetry?.Properties?.Add("FailureMessage", theExceptionThrownByTest.Message);
+                    }
                 }
                 else
                 {
@@ -124,6 +127,14 @@ namespace TestUtility
 
                 if (_appInsightsClient != null)
                 {
+                    if (IsFailure == true)
+                    {
+                        _currentOperation.Telemetry.Success = false;
+                        _currentOperation.Telemetry.ResponseCode = "500";
+                    }
+
+                    _currentOperation?.Dispose();
+
                     _appInsightsClient?.Flush();
                     _appInsightsConfig?.Dispose();
                     _depModule?.Dispose();
