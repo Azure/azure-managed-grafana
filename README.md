@@ -18,6 +18,17 @@ Azure Managed Grafana is a fully managed service that provides Grafana as a serv
 
 This repository contains [issues](https://github.com/Azure/azure-managed-grafana/issues) for collecting user feedback, samples, troubleshooting tips, and useful resources for Azure Managed Grafana.
 
+## GitHub Copilot Integration
+
+This repository includes integration with GitHub Copilot through Azure MCP (Model Context Protocol). The configuration enables Copilot to assist with Azure Managed Grafana operations and Azure resource management.
+
+The MCP configuration is located at `.github/copilot/mcp.json` and provides access to:
+- Azure resource management operations
+- Azure Managed Grafana specific guidance
+- Best practices for Azure integration
+
+For more information about extending GitHub Copilot with MCP, see the [GitHub documentation](https://docs.github.com/en/copilot/using-github-copilot/coding-agent/extending-copilot-coding-agent-with-mcp).
+
 ## Providing feedback
 
 We welcome your feedback! This repository's [issues section](https://github.com/Azure/azure-managed-grafana/issues) is specifically designed for collecting user feedback, feature requests, bug reports, and general questions about Azure Managed Grafana. Please use issues to:
