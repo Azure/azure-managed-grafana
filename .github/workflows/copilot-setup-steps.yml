@@ -1,0 +1,24 @@
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    env:
+      AzureUnitTestSubscriptionId: 'd320f99c-3d38-41c8-89d6-021f326613b8'
+    
+    permissions:
+      id-token: write
+      contents: read
+    environment: Copilot
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: f8216088-b377-492f-a834-9724b6110732
+          tenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+          subscription-id: d320f99c-3d38-41c8-89d6-021f326613b8
