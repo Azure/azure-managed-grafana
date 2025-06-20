@@ -104,8 +104,6 @@ namespace TestUtility
 
             _disposed = true;
 
-            _currentOperation?.Dispose();
-
             try
             {
                 var theExceptionThrownByTest = TestExceptionHelper.TestException;
@@ -124,6 +122,14 @@ namespace TestUtility
 
                 if (_appInsightsClient != null)
                 {
+                    if (IsFailure == true)
+                    {
+                        _currentOperation.Telemetry.Success = false;
+                        _currentOperation.Telemetry.ResponseCode = "500";
+                    }
+
+                    _currentOperation?.Dispose();
+
                     _appInsightsClient?.Flush();
                     _appInsightsConfig?.Dispose();
                     _depModule?.Dispose();
