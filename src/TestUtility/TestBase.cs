@@ -110,7 +110,12 @@ namespace TestUtility
                 if (theExceptionThrownByTest != null)
                 {
                     IsFailure = true;
-                    Logger.Error(theExceptionThrownByTest, $"test_failure. {TestClassName}");
+                    Logger.Error(theExceptionThrownByTest, $"test_failure. {theExceptionThrownByTest.Message}");
+                    
+                    if (_currentOperation != null)
+                    {
+                        _currentOperation?.Telemetry?.Properties?.Add("FailureMessage", theExceptionThrownByTest.Message);
+                    }
                 }
                 else
                 {
