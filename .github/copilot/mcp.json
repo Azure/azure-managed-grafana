@@ -4,7 +4,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@azure/azure-mcp"
+        "@azure/mcp"
       ],
       "env": {
         "AZURE_CLIENT_ID": "f8216088-b377-492f-a834-9724b6110732",
