@@ -19,7 +19,7 @@ namespace ResourceManagementTests
             try
             {
                 HttpClient client = new HttpClient();
-                await client.GetAsync($"https://invalid-domain-value-{uniqueString}.com");
+                await client.GetAsync($"https://invalid-domain-value-{uniqueString}.invalid-domain-20250620.com");
             }
             catch { }
 
