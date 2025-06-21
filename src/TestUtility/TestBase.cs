@@ -83,6 +83,9 @@ namespace TestUtility
 
         public bool? IsFailure { get; private set; }
 
+        // https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables?utm_source=chatgpt.com
+        public bool IsGithubAction => Environment.GetEnvironmentVariable("GITHUB_ACTIONS")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
+
         public Serilog.Events.LogEvent[] GetLogEvents() => TestCorrelator.GetLogEventsFromContextGuid(_testCorrelatorContext.Guid).ToArray();
 
         public void CheckLogPrefix(string expectingLogPrefic, int count = 1)

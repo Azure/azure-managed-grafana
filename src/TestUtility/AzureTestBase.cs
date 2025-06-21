@@ -106,13 +106,20 @@ namespace TestUtility
             return tokenCredential;
         }
 
-        private static string GetUnitTestSubscriptionId()
+        private string GetUnitTestSubscriptionId()
         {
             string subscriptionIdStr = Environment.GetEnvironmentVariable(AzureUnitTestSubscriptionId);
 
             if (string.IsNullOrEmpty(subscriptionIdStr))
             {
-                throw new InvalidOperationException($"Cannot find the subscription id for running the unit tests. It should be set in the environment variable with name {AzureUnitTestSubscriptionId}.");
+                if (IsGithubAction)
+                {
+                    subscriptionIdStr = "d320f99c-3d38-41c8-89d6-021f326613b8";
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Cannot find the subscription id for running the unit tests. It should be set in the environment variable with name {AzureUnitTestSubscriptionId}.");
+                }
             }
 
             if (!Guid.TryParse(subscriptionIdStr, out _))
