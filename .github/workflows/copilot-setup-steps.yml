@@ -1,3 +1,5 @@
+name: "Copilot Setup Steps"
+
 on:
   workflow_dispatch:
 
@@ -6,7 +8,7 @@ permissions:
   contents: read
 
 env:
-  COPILOT_AGENT_FIREWALL_ALLOW_LIST_ADDITIONS: "login.microsoftonline.com, westus2-2.in.applicationinsights.azure.com, invalid-domain-20250620.com"
+  COPILOT_AGENT_FIREWALL_ALLOW_LIST_ADDITIONS: login.microsoftonline.com,westus2-2.in.applicationinsights.azure.com,invalid-domain-20250620.com
 
 jobs:
   copilot-setup-steps:
