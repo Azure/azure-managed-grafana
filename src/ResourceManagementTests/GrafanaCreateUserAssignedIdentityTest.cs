@@ -15,6 +15,12 @@ using Azure.Core;
 
 namespace ResourceManagementTests
 {
+    /// <summary>
+    /// Test class for creating Azure Managed Grafana instances with user-assigned managed identity.
+    /// This test validates the creation of Grafana instances using pre-existing user-assigned managed identities,
+    /// which provides more control over identity lifecycle and can be shared across multiple resources.
+    /// The test discovers available user-assigned identities in the subscription and uses one for Grafana creation.
+    /// </summary>
     public class GrafanaCreateUserAssignedIdentityTest : AzureTestBase
     {
         public GrafanaCreateUserAssignedIdentityTest(ITestOutputHelper output)

@@ -13,6 +13,11 @@ using Xunit.Abstractions;
 
 namespace ResourceManagementTests
 {
+    /// <summary>
+    /// Test class for creating Azure Managed Grafana instances with system-assigned managed identity.
+    /// This test validates the creation of Grafana instances using system-assigned managed identity,
+    /// which is automatically managed by Azure and commonly used for standard deployments.
+    /// </summary>
     public class GrafanaCreateSystemAssignedIdentityTest : AzureTestBase
     {
         public GrafanaCreateSystemAssignedIdentityTest(ITestOutputHelper output)
