@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "azure": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@azure/mcp-server-azure"
+      ],
+      "env": {
+        "AZURE_TENANT_ID": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+        "AZURE_CLIENT_ID": "f8216088-b377-492f-a834-9724b6110732",
+        "AZURE_SUBSCRIPTION_ID": "d320f99c-3d38-41c8-89d6-021f326613b8"
+      }
+    }
+  }
+}
