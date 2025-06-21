@@ -1,4 +1,4 @@
-﻿using Azure.ResourceManager.Grafana;
+using Azure.ResourceManager.Grafana;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager;
 using Azure;
@@ -10,13 +10,17 @@ using System.Text;
 using System.Threading.Tasks;
 using TestUtility;
 using Xunit.Abstractions;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace ResourceManagementTests
 {
-    public class GrafanaCreateTest : AzureTestBase
+    /// <summary>
+    /// Test class for creating Azure Managed Grafana instances with system-assigned managed identity.
+    /// This test validates the creation of Grafana instances using system-assigned managed identity,
+    /// which is automatically managed by Azure and commonly used for standard deployments.
+    /// </summary>
+    public class GrafanaCreateSystemAssignedIdentityTest : AzureTestBase
     {
-        public GrafanaCreateTest(ITestOutputHelper output)
+        public GrafanaCreateSystemAssignedIdentityTest(ITestOutputHelper output)
             : base(output)
         {
         }
@@ -30,7 +34,7 @@ namespace ResourceManagementTests
 
                 var grafanaData = new ManagedGrafanaData(TestLocation)
                 {
-                    // “Standard” is the only production SKU today
+                    // "Standard" is the only production SKU today
                     SkuName = "Standard",
 
                     // Enable System-Assigned Managed Identity (optional but typical)
