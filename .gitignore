@@ -9,7 +9,7 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
+# [Bb]in/ - commented out to allow project bin directory for MCP binaries
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
@@ -382,7 +382,7 @@ FodyWeavers.xsd
 
 # Azure Functions
 local.settings.json
-bin/
+# bin/ - commented out to allow project bin directory for MCP binaries
 obj/
 
 # Azure CLI
