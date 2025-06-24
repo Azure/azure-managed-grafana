@@ -427,3 +427,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# MCP binaries (downloaded at runtime)
+bin/bluebridge-cli
+!bin/.gitkeep
