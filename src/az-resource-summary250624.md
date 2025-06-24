@@ -1,6 +1,6 @@
 # Azure Subscription Resource Summary
 
-Generated on: 2025-06-24 22:24:19 UTC
+Generated on: 2025-06-24 22:25:23 UTC
 
 ## Query
 ```kusto
