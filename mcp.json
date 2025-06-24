@@ -1,0 +1,9 @@
+{
+    "inputs": [],
+    "servers": {
+        "blue-bridge-cli": {
+            "type": "stdio",
+            "command": "${cwd}/bluebridge-cli-linux-x64"
+        }
+    }
+}

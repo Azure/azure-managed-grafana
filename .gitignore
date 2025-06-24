@@ -421,6 +421,9 @@ $RECYCLE.BIN/
 .directory
 .Trash-*
 
+# Blue Bridge CLI binary
+bluebridge-cli-linux-x64
+
 # Logs
 logs
 *.log
