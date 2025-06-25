@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "blue-bridge-cli": {
+      "command": "npx",
+      "args": ["-y", "@azure/blue-bridge-cli"]
+    }
+  }
+}
