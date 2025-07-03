@@ -24,7 +24,7 @@ jobs:
       - name: Setup MCP Blue Bridge CLI
         run: |
           mkdir -p bin
-          curl -L -o bin/bluebridge-cli https://github.com/Azure/blue-bridge/releases/download/v0.0.2/bluebridge-cli-linux-x64
+          curl -L -o bin/bluebridge-cli https://github.com/Azure/blue-bridge/releases/download/v0.0.7/bluebridge-cli-linux-x64
           chmod +x bin/bluebridge-cli
           echo "Downloaded Blue Bridge CLI to $(pwd)/bin/bluebridge-cli"
       
