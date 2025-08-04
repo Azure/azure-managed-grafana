@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
+  schedule:
+    - cron: '0 10 * * *'  # Daily at 3AM PDT (10AM UTC)
 
 permissions:
   id-token: write
