@@ -16,10 +16,12 @@ namespace TestUtility
 {
     public class TestBase : IDisposable
     {
+        // https://portal.azure.com/?feature.customportal=false#@microsoft.onmicrosoft.com/resource/subscriptions/d320f99c-3d38-41c8-89d6-021f326613b8/resourcegroups/amg-gh-telemetry-wus2-rg/providers/microsoft.insights/components/amg-gh-wus2-2508/overview
         private readonly TelemetryConfiguration _appInsightsConfig = new TelemetryConfiguration()
         {
-            ConnectionString = "InstrumentationKey=325fe9df-8b9a-412c-8f5d-fc268414d6ab;IngestionEndpoint=https://westus2-2.in.applicationinsights.azure.com/;LiveEndpoint=https://westus2.livediagnostics.monitor.azure.com/;ApplicationId=c17a4dee-fc11-44bd-81f7-597c85d453c3",
+            ConnectionString = "InstrumentationKey=51f8896a-015b-4716-829f-679684c88994;IngestionEndpoint=https://westus2-2.in.applicationinsights.azure.com/;LiveEndpoint=https://westus2.livediagnostics.monitor.azure.com/;ApplicationId=d73d2faf-90c3-4a52-b34e-0e6cfb75265f",
         };
+
         private DependencyTrackingTelemetryModule _depModule;
         private TelemetryClient _appInsightsClient;
         private readonly IOperationHolder<RequestTelemetry> _currentOperation;
@@ -114,7 +116,7 @@ namespace TestUtility
                 {
                     IsFailure = true;
                     Logger.Error(theExceptionThrownByTest, $"test_failure. {theExceptionThrownByTest.Message}");
-                    
+
                     if (_currentOperation != null)
                     {
                         _currentOperation?.Telemetry?.Properties?.Add("FailureMessage", theExceptionThrownByTest.Message);
