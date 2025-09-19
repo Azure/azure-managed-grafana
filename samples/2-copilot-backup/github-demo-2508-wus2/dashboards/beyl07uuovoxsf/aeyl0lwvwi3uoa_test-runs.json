@@ -81,8 +81,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 16,
-        "w": 17,
+        "h": 12,
+        "w": 19,
         "x": 0,
         "y": 0
       },
@@ -93,7 +93,7 @@
             "lastNotNull"
           ],
           "displayMode": "list",
-          "placement": "right",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
@@ -124,6 +124,81 @@
       ],
       "title": "Test run count",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-azure-monitor-datasource",
+        "uid": "azure-monitor-oob"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 19,
+        "x": 0,
+        "y": 12
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.6.3",
+      "targets": [
+        {
+          "azureLogAnalytics": {
+            "dashboardTime": true,
+            "query": "requests\r\n| extend TestClassName = tostring(customDimensions.TestClassName)\r\n| where TestClassName != \"\"\r\n| summarize testCount=count() by TestClassName",
+            "resources": [
+              "/subscriptions/d320f99c-3d38-41c8-89d6-021f326613b8/resourceGroups/amg-gh-telemetry-wus2-rg/providers/microsoft.insights/components/amg-gh-wus2-2508"
+            ],
+            "resultFormat": "table",
+            "timeColumn": "timestamp"
+          },
+          "datasource": {
+            "type": "grafana-azure-monitor-datasource",
+            "uid": "azure-monitor-oob"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A"
+        }
+      ],
+      "title": "Test run count",
+      "type": "table"
     }
   ],
   "preload": false,
@@ -140,5 +215,5 @@
   "timezone": "browser",
   "title": "Test runs",
   "uid": "aeyl0lwvwi3uoa",
-  "version": 3
+  "version": 7
 }
