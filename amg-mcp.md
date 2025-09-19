@@ -2,6 +2,27 @@
 
 AMG-MCP is a Model Context Protocol (MCP) server for Azure Managed Grafana (AMG). 
 
+## 🛠️ Available MCP Tools
+
+AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
+
+| Tool Name | Description |
+|-----------|-------------|
+| `amgmcp_dashboard_upload` | Upload or update an existing Grafana dashboard from a local JSON file. Update dashboards programmatically by providing dashboard JSON files that follow the official Grafana schema. |
+| `amgmcp_dashboard_download` | Download a specific Grafana dashboard by its UID to a local file. Backup individual dashboards or retrieve dashboard configurations for version control. |
+| `amgmcp_system_backup` | Export comprehensive Grafana content including dashboards, data sources, and other configurations to a local folder. Create complete backups of your Grafana instance for disaster recovery or migration purposes. |
+| `amgmcp_system_restore` | Import Grafana content from a local backup folder, restoring dashboards, data sources, and configurations. Restore Grafana configurations from previously created backups. |
+| `amgmcp_query_resource_log` | Query Azure Resource Logs through Grafana's Azure Monitor data source. Analyze Azure resource logs and metrics using KQL queries through Grafana's Azure Monitor integration. |
+| `amgmcp_query_resource_graph` | Query Azure Resource Graph through Grafana's Azure Monitor data source. Discover and analyze Azure resources across subscriptions using Resource Graph queries. |
+| `amgmcp_query_azure_subscriptions` | Retrieve available Azure subscriptions through Grafana's Azure Monitor data source. List and explore Azure subscriptions accessible through the configured Azure Monitor data source. |
+| `amgmcp_query_datasource` | Execute queries against any configured Grafana data source. Run custom queries against various data sources configured in your Grafana instance. |
+| `amgmcp_image_render` | Render Grafana dashboards or specific panels as images for reporting and sharing. Generate dashboard screenshots for reports, documentation, or automated monitoring alerts. |
+
+## 🔬 Samples
+
+- **GitHub Copilot Setup**: [samples/1-copilot-setup-mcp/README.md](samples/1-copilot-setup-mcp/README.md) - Step-by-step guide to setup AMG-MCP in GitHub Copilot
+- **GitHub Copilot Backup Automation**: [samples/2-copilot-backup/README.md](samples/2-copilot-backup/README.md) - Demonstrates automated Azure Managed Grafana backup procedures using GitHub Copilot with MCP tools
+
 ## 🚀 Installation
 
 ### Prerequisites
@@ -101,27 +122,6 @@ AMG-MCP is a Model Context Protocol (MCP) server for Azure Managed Grafana (AMG)
    Make sure to:
    - Update the `command` path to point to your downloaded binary location
    - Replace the endpoint URL with your actual Azure Managed Grafana URL
-
-## 🛠️ Available MCP Tools
-
-AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
-
-| Tool Name | Description |
-|-----------|-------------|
-| `amgmcp_dashboard_upload` | Upload or update an existing Grafana dashboard from a local JSON file. Update dashboards programmatically by providing dashboard JSON files that follow the official Grafana schema. |
-| `amgmcp_dashboard_download` | Download a specific Grafana dashboard by its UID to a local file. Backup individual dashboards or retrieve dashboard configurations for version control. |
-| `amgmcp_system_backup` | Export comprehensive Grafana content including dashboards, data sources, and other configurations to a local folder. Create complete backups of your Grafana instance for disaster recovery or migration purposes. |
-| `amgmcp_system_restore` | Import Grafana content from a local backup folder, restoring dashboards, data sources, and configurations. Restore Grafana configurations from previously created backups. |
-| `amgmcp_query_resource_log` | Query Azure Resource Logs through Grafana's Azure Monitor data source. Analyze Azure resource logs and metrics using KQL queries through Grafana's Azure Monitor integration. |
-| `amgmcp_query_resource_graph` | Query Azure Resource Graph through Grafana's Azure Monitor data source. Discover and analyze Azure resources across subscriptions using Resource Graph queries. |
-| `amgmcp_query_azure_subscriptions` | Retrieve available Azure subscriptions through Grafana's Azure Monitor data source. List and explore Azure subscriptions accessible through the configured Azure Monitor data source. |
-| `amgmcp_query_datasource` | Execute queries against any configured Grafana data source. Run custom queries against various data sources configured in your Grafana instance. |
-| `amgmcp_image_render` | Render Grafana dashboards or specific panels as images for reporting and sharing. Generate dashboard screenshots for reports, documentation, or automated monitoring alerts. |
-
-## 🔬 Samples
-
-- **GitHub Copilot Setup**: [samples/1-copilot-setup-mcp/README.md](samples/1-copilot-setup-mcp/README.md) - Step-by-step guide to setup AMG-MCP in GitHub Copilot
-- **GitHub Copilot Backup Automation**: [samples/2-copilot-backup/README.md](samples/2-copilot-backup/README.md) - Demonstrates automated Azure Managed Grafana backup procedures using GitHub Copilot with MCP tools
 
 ## 📚 Links
 
