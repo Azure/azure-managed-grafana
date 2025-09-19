@@ -78,9 +78,16 @@ Copilot precisely follows the 6-step procedure outlined in `backup-amg.md`:
 
 ## Getting Started
 
+### Setup Prerequisite
+Before using this backup automation, you can first complete the AMG-MCP setup process documented in [`samples/1-copilot-setup-mcp/README.md`](../1-copilot-setup-mcp/README.md). This setup includes:
+- Creating an Entra ID application with federated credentials
+- Configuring the GitHub workflow for MCP server access
+- Setting up GitHub Copilot agent MCP configuration
+- Configuring firewall rules for Azure service access
+
 ### Prerequisites
 1. GitHub repository with Copilot enabled
-2. MCP tools configured for Azure Managed Grafana
+2. MCP tools configured for Azure Managed Grafana (see setup prerequisite above)
 3. Proper authentication for Grafana instances
 
 ### Usage Instructions
