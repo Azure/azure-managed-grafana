@@ -36,22 +36,22 @@ AMG-MCP is a Model Context Protocol (MCP) server for Azure Managed Grafana (AMG)
    
    **For Windows:**
    ```
-   https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.1/amg-mcp-win-x64.exe
+   https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.2/amg-mcp-win-x64.exe
    ```
    
    **For macOS (x64):**
    ```
-   https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.1/amg-mcp-macos-x64
+   https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.2/amg-mcp-macos-x64
    ```
    
    **For macOS (ARM64):**
    ```
-   https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.1/amg-mcp-macos-arm64
+   https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.2/amg-mcp-macos-arm64
    ```
    
    **For Linux (x64):**
    ```
-   https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.1/amg-mcp-linux-x64
+   https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.2/amg-mcp-linux-x64
    ```
    
    Save the binary to a convenient location on your system.

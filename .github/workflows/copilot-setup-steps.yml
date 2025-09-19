@@ -24,7 +24,7 @@ jobs:
       - name: Setup amg-mcp
         run: |
           mkdir -p bin
-          curl -L -o bin/amg-mcp https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.1/amg-mcp-linux-x64
+          curl -L -o bin/amg-mcp https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.2/amg-mcp-linux-x64
           chmod +x bin/amg-mcp
           echo "Downloaded amg-mcp to $(pwd)/bin/amg-mcp"
 
