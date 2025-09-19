@@ -33,7 +33,7 @@ The following arguments configure various Azure services for AMG-MCP:
 - This is the endpoint for the Azure Managed Grafana instance
 - Can be found in the Azure portal under the Grafana resource
 
-### Step 5: Configure GitHub Copilot Agent Firewall Rules
+### Step 4: Configure GitHub Copilot Agent Firewall Rules
 Add AMG-MCP in MCP configuration: `Settings` → `Copilot` → `Coding agent` → `Custom allowlist`
 
 Add the following domains to the allowlist:
