@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using Xunit.Abstractions;
 using Azure.ResourceManager;
 using System.Collections.Generic;
-using Azure.ResourceManager.Resources.Models;
 
 namespace TestUtility
 {

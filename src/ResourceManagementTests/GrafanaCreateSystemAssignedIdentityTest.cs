@@ -2,12 +2,6 @@ using Azure.ResourceManager.Grafana;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager;
 using Azure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using TestUtility;
 using Xunit.Abstractions;
 
