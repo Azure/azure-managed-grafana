@@ -1,0 +1,104 @@
+﻿{
+  "Uid": "feyl18ezzcwsgb",
+  "Id": 34,
+  "OrgId": 1,
+  "FolderUID": "deupr4ea4imtce",
+  "RuleGroup": "1m-eg",
+  "Title": "crawl-amg-memory",
+  "Condition": "",
+  "Data": [
+    {
+      "RefId": "A",
+      "QueryType": "Azure Monitor",
+      "DatasourceUid": "azure-monitor-oob",
+      "Model": {
+        "azureMonitor": {
+          "aggregation": "Maximum",
+          "allowedTimeGrainsMs": [
+            60000,
+            300000,
+            900000,
+            1800000,
+            3600000,
+            21600000,
+            43200000,
+            86400000
+          ],
+          "dimensionFilters": [],
+          "metricName": "MemoryUsagePercentage",
+          "metricNamespace": "microsoft.dashboard/grafana",
+          "region": "westus2",
+          "resources": [
+            {
+              "metricNamespace": "Microsoft.Dashboard/grafana",
+              "region": "westus2",
+              "resourceGroup": "amg-gh-telemetry-wus2-rg",
+              "resourceName": "github-demo-2508-wus2",
+              "subscription": "d320f99c-3d38-41c8-89d6-021f326613b8"
+            }
+          ],
+          "timeGrain": "auto"
+        },
+        "intervalMs": 1000,
+        "maxDataPoints": 43200,
+        "queryType": "Azure Monitor",
+        "refId": "A",
+        "subscription": "d320f99c-3d38-41c8-89d6-021f326613b8"
+      },
+      "RelativeTimeRange": {
+        "From": 600,
+        "To": 0
+      }
+    },
+    {
+      "RefId": "B",
+      "QueryType": "",
+      "DatasourceUid": "__expr__",
+      "Model": {
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "B"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "last"
+            },
+            "type": "query"
+          }
+        ],
+        "datasource": {
+          "type": "__expr__",
+          "uid": "__expr__"
+        },
+        "expression": "A",
+        "intervalMs": 1000,
+        "maxDataPoints": 43200,
+        "reducer": "last",
+        "refId": "B",
+        "type": "reduce"
+      },
+      "RelativeTimeRange": {
+        "From": 0,
+        "To": 0
+      }
+    }
+  ],
+  "For": "0s",
+  "NoDataState": "",
+  "ExecErrState": "",
+  "IsPaused": false,
+  "Annotations": null,
+  "Labels": null,
+  "Provenance": null,
+  "Updated": "2025-09-19T21:20:05Z"
+}

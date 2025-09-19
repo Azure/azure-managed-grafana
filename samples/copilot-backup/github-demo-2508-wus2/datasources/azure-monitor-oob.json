@@ -1,0 +1,22 @@
+﻿{
+  "id": 1,
+  "uid": "azure-monitor-oob",
+  "orgId": 1,
+  "name": "Azure Monitor",
+  "type": "grafana-azure-monitor-datasource",
+  "typeName": "Azure Monitor",
+  "typeLogoUrl": "public/app/plugins/datasource/azuremonitor/img/logo.jpg",
+  "access": "proxy",
+  "url": "",
+  "user": "",
+  "database": "",
+  "basicAuth": false,
+  "isDefault": true,
+  "jsonData": {
+    "azureCredentials": {
+      "authType": "msi"
+    },
+    "subscriptionId": "d320f99c-3d38-41c8-89d6-021f326613b8"
+  },
+  "readOnly": false
+}
