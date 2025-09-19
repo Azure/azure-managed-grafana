@@ -6,7 +6,11 @@ AMG-MCP is a Model Context Protocol (MCP) server for Azure Managed Grafana (AMG)
 
 ### Prerequisites
 
-1. **Install Azure CLI**
+1. **Authentication Setup**
+   
+   AMG-MCP supports two authentication methods:
+   
+   **Option A: Azure CLI Authentication (Recommended)**
    
    Install the Azure CLI from the official Microsoft documentation:
    https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
@@ -17,6 +21,12 @@ AMG-MCP is a Model Context Protocol (MCP) server for Azure Managed Grafana (AMG)
    ```
    
    AMG-MCP will use the Azure CLI credentials for authentication.
+   
+   **Option B: Grafana Service Account Token**
+   
+   Alternatively, you can use a Grafana service account token for authentication. Set the token using the environment variable:
+   - **Variable name:** `AmgMcpOptions__AzureManagedGrafanaServiceAccountToken`
+   - **Value:** Your Grafana service account token
 
 ### Download AMG-MCP Binary
 
