@@ -9,7 +9,7 @@ This SOP provides step-by-step instructions for backing up Azure Managed Grafana
 - **Name**: `github-demo-2508-wus2`
 - **Endpoint**: `https://github-demo-2508-wus2-ggdyf2etcaf3bda3.wus2.grafana.azure.com/`
 - **Purpose**: Television kiosk monitoring dashboards
-- **Backup Directory**: `$repo_root/samples/copilot-backup/github-demo-2508-wus2`
+- **Backup Directory**: `$repo_root/samples/2-copilot-backup/github-demo-2508-wus2`
 
 ## Backup Procedure
 
@@ -36,7 +36,7 @@ For each Grafana instance, execute the below export process.
 #### For github-demo-2508-wus2:
 Use the `amgmcp_system_backup` tool with the following parameters:
 - **Source**: `https://github-demo-2508-wus2-ggdyf2etcaf3bda3.wus2.grafana.azure.com/`
-- **Destination**: `$repo_root/samples/copilot-backup/github-demo-2508-wus2`
+- **Destination**: `$repo_root/samples/2-copilot-backup/github-demo-2508-wus2`
 - **Content Types**: All (dashboards, data sources, alerts, folders, etc.)
 
 ### Step 3: Verify Backup Completion
@@ -66,7 +66,7 @@ If the dashboard JSON file changed, then capture a screenshot of the dashboard.
 
 **Directory structure for screenshots:**
 ```
-$repo_root/samples/copilot-backup/{instance-name}/screenshots/
+$repo_root/samples/2-copilot-backup/{instance-name}/screenshots/
 ├── dashboard1_20241202-143000.png
 ├── dashboard2_20241202-143000.png
 └── new-dashboard_20241202-143000.png
