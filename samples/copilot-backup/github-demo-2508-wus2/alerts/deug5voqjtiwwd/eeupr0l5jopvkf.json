@@ -1,0 +1,147 @@
+﻿{
+  "Uid": "eeupr0l5jopvkf",
+  "Id": 1,
+  "OrgId": 1,
+  "FolderUID": "deug5voqjtiwwd",
+  "RuleGroup": "hourly-eg",
+  "Title": "test",
+  "Condition": "C",
+  "Data": [
+    {
+      "RefId": "A",
+      "QueryType": "Azure Monitor",
+      "DatasourceUid": "azure-monitor-oob",
+      "Model": {
+        "azureMonitor": {
+          "aggregation": "Average",
+          "allowedTimeGrainsMs": [
+            60000,
+            300000,
+            900000,
+            1800000,
+            3600000,
+            21600000,
+            43200000,
+            86400000
+          ],
+          "dimensionFilters": [],
+          "metricName": "availabilityResults/availabilityPercentage",
+          "metricNamespace": "microsoft.insights/components",
+          "region": "westus2",
+          "resources": [
+            {
+              "metricNamespace": "microsoft.insights/components",
+              "region": "westus2",
+              "resourceGroup": "amg-gh-telemetry-wus2-rg",
+              "resourceName": "amg-gh-wus2-2508",
+              "subscription": "d320f99c-3d38-41c8-89d6-021f326613b8"
+            }
+          ],
+          "timeGrain": "auto"
+        },
+        "intervalMs": 1000,
+        "maxDataPoints": 43200,
+        "queryType": "Azure Monitor",
+        "refId": "A",
+        "subscription": "d320f99c-3d38-41c8-89d6-021f326613b8"
+      },
+      "RelativeTimeRange": {
+        "From": 600,
+        "To": 0
+      }
+    },
+    {
+      "RefId": "B",
+      "QueryType": "",
+      "DatasourceUid": "__expr__",
+      "Model": {
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "B"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "last"
+            },
+            "type": "query"
+          }
+        ],
+        "datasource": {
+          "type": "__expr__",
+          "uid": "__expr__"
+        },
+        "expression": "A",
+        "intervalMs": 1000,
+        "maxDataPoints": 43200,
+        "reducer": "last",
+        "refId": "B",
+        "type": "reduce"
+      },
+      "RelativeTimeRange": {
+        "From": 0,
+        "To": 0
+      }
+    },
+    {
+      "RefId": "C",
+      "QueryType": "",
+      "DatasourceUid": "__expr__",
+      "Model": {
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "C"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "last"
+            },
+            "type": "query"
+          }
+        ],
+        "datasource": {
+          "type": "__expr__",
+          "uid": "__expr__"
+        },
+        "expression": "B",
+        "intervalMs": 1000,
+        "maxDataPoints": 43200,
+        "refId": "C",
+        "type": "threshold"
+      },
+      "RelativeTimeRange": {
+        "From": 0,
+        "To": 0
+      }
+    }
+  ],
+  "For": "2h",
+  "NoDataState": "NoData",
+  "ExecErrState": "Error",
+  "IsPaused": false,
+  "Annotations": null,
+  "Labels": null,
+  "Provenance": null,
+  "Updated": "2025-08-11T20:30:08Z"
+}
