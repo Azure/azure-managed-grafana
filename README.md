@@ -18,6 +18,18 @@ Azure Managed Grafana is a fully managed service that provides Grafana as a serv
 
 This repository contains [issues](https://github.com/Azure/azure-managed-grafana/issues) for collecting user feedback, samples, troubleshooting tips, and useful resources for Azure Managed Grafana.
 
+## AMG-MCP (Model Context Protocol)
+
+AMG-MCP is a Model Context Protocol (MCP) server that provides programmatic access to Azure Managed Grafana capabilities. It enables developers and AI assistants to interact with Azure Managed Grafana through a standardized protocol, offering tools for dashboard management, data querying, backup operations, and more. For detailed installation instructions, configuration options, and usage examples, see the [AMG-MCP documentation](amg-mcp.md).
+
+### Key AMG-MCP Features
+
+- **Dashboard Management**: Upload, download, and manage Grafana dashboards programmatically
+- **Data Querying**: Query Azure Resource Logs, Resource Graph, and other data sources through Grafana
+- **Backup & Restore**: Comprehensive backup and restore operations for Grafana configurations
+- **Image Rendering**: Generate dashboard and panel images for reporting and documentation
+
+
 ## Providing feedback
 
 We welcome your feedback! This repository's [issues section](https://github.com/Azure/azure-managed-grafana/issues) is specifically designed for collecting user feedback, feature requests, bug reports, and general questions about Azure Managed Grafana. Please use issues to:
