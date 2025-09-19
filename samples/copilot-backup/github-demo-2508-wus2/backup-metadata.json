@@ -1,0 +1,20 @@
+{
+  "backup_info": {
+    "timestamp": "2025-09-19T21:19:57Z",
+    "source_endpoint": "https://github-demo-2508-wus2-ggdyf2etcaf3bda3.wus2.grafana.azure.com/",
+    "backup_location": "/home/runner/work/azure-managed-grafana/azure-managed-grafana/samples/copilot-backup/github-demo-2508-wus2",
+    "status": "authentication_required",
+    "note": "Backup process initiated but requires proper Grafana role permissions to access the instance"
+  },
+  "expected_content": {
+    "dashboards": "JSON files for each dashboard configuration",
+    "datasources": "Data source configurations and settings", 
+    "alerts": "Alert rules and notification configurations",
+    "screenshots": "Dashboard screenshots for changed dashboards (max 5)"
+  },
+  "access_requirements": {
+    "minimum_role": "Grafana Viewer",
+    "propagation_time": "up to 1 hour for newly created instances",
+    "trace_id": "00-f53485dc14826bc5f0464e1ef616f5fb-8839092124f063fb-00"
+  }
+}
