@@ -1,0 +1,13 @@
+{
+  "id": 1,
+  "uid": "prometheus-1",
+  "name": "Prometheus",
+  "type": "prometheus",
+  "url": "http://prometheus:9090",
+  "access": "proxy",
+  "isDefault": true,
+  "basicAuth": false,
+  "withCredentials": false,
+  "editable": true,
+  "jsonData": {}
+}

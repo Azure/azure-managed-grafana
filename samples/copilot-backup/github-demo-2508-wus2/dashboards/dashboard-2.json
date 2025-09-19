@@ -1,0 +1,22 @@
+{
+  "id": 2,
+  "uid": "dashboard-2", 
+  "title": "Sample Dashboard 2",
+  "tags": ["monitoring"],
+  "timezone": "browser",
+  "panels": [],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "refresh": "5s",
+  "version": 1,
+  "links": []
+}

@@ -1,0 +1,16 @@
+{
+  "id": 1,
+  "uid": "alert-1",
+  "title": "High CPU Usage",
+  "condition": "cpu_usage > 80",
+  "frequency": "10s",
+  "handler": 1,
+  "severity": "critical",
+  "state": "ok",
+  "executionError": "",
+  "evalData": null,
+  "newStateDate": "2023-01-01T00:00:00Z",
+  "stateChanges": 0,
+  "created": "2023-01-01T00:00:00Z",
+  "updated": "2023-01-01T00:00:00Z"
+}
