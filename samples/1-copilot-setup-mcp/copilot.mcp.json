@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "amg-mcp": {
+      "command": "/home/runner/work/azure-managed-grafana/azure-managed-grafana/bin/amg-mcp",
+      "type": "local",
+      "args": [
+        "--AmgMcpOptions:AzureManagedGrafanaEndpoint=https://github-demo-2508-wus2-ggdyf2etcaf3bda3.wus2.grafana.azure.com"
+      ],
+      "tools": [
+        "*"
+      ]
+    }
+  }
+}
