@@ -21,13 +21,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Setup MCP Blue Bridge CLI
+      - name: Setup amg-mcp
         run: |
           mkdir -p bin
-          curl -L -o bin/bluebridge-cli https://github.com/Azure/blue-bridge/releases/download/v0.0.7/bluebridge-cli-linux-x64
-          chmod +x bin/bluebridge-cli
-          echo "Downloaded Blue Bridge CLI to $(pwd)/bin/bluebridge-cli"
-      
+          curl -L -o bin/amg-mcp https://github.com/Azure/azure-managed-grafana/releases/download/v0.0.1/amg-mcp-linux-x64
+          chmod +x bin/amg-mcp
+          echo "Downloaded amg-mcp to $(pwd)/bin/amg-mcp"
+
       - name: Azure login
         uses: azure/login@v2
         with:
