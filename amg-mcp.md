@@ -8,6 +8,7 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 
 | Tool Name | Description |
 |-----------|-------------|
+| `amgmcp_dashboard_search` | Search for Grafana dashboards by a query string. Returns a list of matching dashboards with details like title, UID, folder, tags, and URL. |
 | `amgmcp_dashboard_upload` | Upload or update an existing Grafana dashboard from a local JSON file. Update dashboards programmatically by providing dashboard JSON files that follow the official Grafana schema. |
 | `amgmcp_dashboard_download` | Download a specific Grafana dashboard by its UID to a local file. Backup individual dashboards or retrieve dashboard configurations for version control. |
 | `amgmcp_system_backup` | Export comprehensive Grafana content including dashboards, data sources, and other configurations to a local folder. Create complete backups of your Grafana instance for disaster recovery or migration purposes. |
