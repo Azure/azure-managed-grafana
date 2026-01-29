@@ -6,7 +6,10 @@ Every Azure Managed Grafana instance includes a built-in remote MCP server endpo
 
 ## ⚙️ MCP Configuration
 
-To connect to the AMG-MCP endpoint, you need to configure your MCP client with the appropriate settings. Below is an example configuration for Cline:
+To connect to the AMG-MCP endpoint, you need to configure your MCP client with the appropriate settings. AMG-MCP supports two authentication methods:
+
+1. **Grafana Service Account Token** - A token generated from your Grafana instance (format: `glsa_xxx`)
+2. **Entra ID Token** - An Azure AD/Entra ID token (e.g., from a managed identity or service principal)
 
 ### Cline Configuration Example
 
@@ -20,7 +23,7 @@ Add the following configuration to your Cline MCP settings:
     "type": "streamableHttp",
     "url": "https://<grafana-endpoint>/api/azure-mcp",
     "headers": {
-      "Authorization": "Bearer <your-grafana-service-account-token>"
+      "Authorization": "Bearer <token>"
     }
   }
 }
@@ -34,9 +37,11 @@ Add the following configuration to your Cline MCP settings:
 | `timeout` | Connection timeout in seconds. |
 | `type` | Transport type. Use `streamableHttp` for remote MCP endpoints. |
 | `url` | The AMG-MCP endpoint URL: `https://<grafana-endpoint>/api/azure-mcp` |
-| `headers.Authorization` | Bearer token using a Grafana service account token (format: `glsa_xxx`). |
+| `headers.Authorization` | Bearer token - either a Grafana service account token or an Entra ID token. |
 
-**Example with actual values:**
+### Authentication Option 1: Grafana Service Account Token
+
+Use a Grafana service account token (format: `glsa_xxx`) for authentication:
 
 ```json
 {
@@ -53,6 +58,34 @@ Add the following configuration to your Cline MCP settings:
 ```
 
 > **Note:** To create a Grafana service account token, navigate to **Administration > Service accounts** in your Grafana instance, create a new service account with appropriate permissions, and generate a token.
+
+### Authentication Option 2: Entra ID Token
+
+Use an Entra ID token (Azure AD token) for authentication. This is useful when using managed identities or service principals.
+
+**Entra ID Token Audience:** `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f`
+
+```json
+{
+  "my-grafana-mcp-server": {
+    "disabled": false,
+    "timeout": 60,
+    "type": "streamableHttp",
+    "url": "https://my-grafana-d5ggtqegcr2safcp.wcus.grafana.azure.com/api/azure-mcp",
+    "headers": {
+      "Authorization": "Bearer <entra-id-token>"
+    }
+  }
+}
+```
+
+To obtain an Entra ID token, you can use Azure CLI:
+
+```bash
+az account get-access-token --resource ce34e7e5-485f-4d76-964f-b3d2b16d1e4f --query accessToken -o tsv
+```
+
+Or use a managed identity to acquire a token programmatically with the audience `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f`.
 
 ## 🛠️ Available MCP Tools
 
