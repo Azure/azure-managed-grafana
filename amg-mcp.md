@@ -2,6 +2,8 @@
 
 > **Note:** This document describes the **remote MCP server endpoint** that is built into every Azure Managed Grafana instance. For the **self-hosted MCP server** that you can run locally, see [amg-mcp-local.md](https://github.com/Azure/azure-managed-grafana/blob/main/amg-mcp-local.md).
 
+Every Azure Managed Grafana (AMG)
+
 AMG-MCP is a Model Context Protocol (MCP) server for Azure Managed Grafana (AMG). 
 
 ## 🛠️ Available MCP Tools
