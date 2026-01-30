@@ -108,3 +108,4 @@ Or use a managed identity to acquire a token programmatically with the audience 
 ## 📚 Links
 
 - Docs & samples: https://aka.ms/amg-mcp
+- If you encounter any issues, please open an issue here: https://aka.ms/managed-grafana/issues

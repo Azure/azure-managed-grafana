@@ -4,6 +4,8 @@ This guide walks you through configuring and using the **Azure Managed Grafana M
 
 > **📖 Reference:** For complete AMG-MCP documentation, see [amg-mcp.md](../../amg-mcp.md).
 
+> **🐛 Issues:** If you encounter any issues, please open an issue here: https://aka.ms/managed-grafana/issues
+
 ---
 
 ## 📋 Table of Contents
