@@ -28,6 +28,9 @@ You can create a new tool in the 'Tools' section of your Foundry agent configura
 
 ![MCP Config](5-mcp-config.png)
 
+Choose `Microsoft Entra` as the Authentication.
+Use `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f` for Audience.
+
 ## Step 5: Test the Agent
 Once the MCP tool is configured, you can test the agent by triggering a resource graph query. Like a sample prompt 'list azure managed Grafana'.
 
