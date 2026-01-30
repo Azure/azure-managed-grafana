@@ -102,8 +102,8 @@ Your Azure AI Foundry project uses a managed identity to access resources. You n
 
 1. In your agent configuration, scroll to the **Tools** section
 2. Click **+ Add tool**
-3. Select **Custom** as the tool type
-4. Choose **Model Context Protocol (MCP)** as the protocol
+3. Select **Catalog** tab
+4. Choose **Azure Managed Grafana**
 
 ![Agent Add MCP](4-agent-add-mcp.png)
 
@@ -111,10 +111,10 @@ Your Azure AI Foundry project uses a managed identity to access resources. You n
 
 | Setting | Value |
 |---------|-------|
-| **Remote MCP Server endpoint** | `https://<your-grafana-endpoint>/api/azure-mcp` |
+| **workspace-hostname** | This is the endpoint we get from the first step.`my-doc-amg-dvgbauhma2esangn.wus2.grafana.azure.com` |
 | **Authentication** | Microsoft Entra |
 | **Type** | Project Managed Identity |
-| **Audience** | `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f` |
+| **Audience** | Use the pre-populated value `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f` |
 
 ![MCP Config](5-mcp-config.png)
 
