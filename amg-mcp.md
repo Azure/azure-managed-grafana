@@ -18,6 +18,10 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 | `amgmcp_query_resource_metric_definition` | Query Azure Resource Metric Definitions through Grafana Azure Monitor data source. |
 | `amgmcp_query_resource_log` | Query Azure Resource Log through Grafana Azure Monitor data source. |
 
+## 🔬 Samples
+
+- **Azure AI Foundry Setup**: [samples/3-remote-mcp-foundry-agent/foundry-agent-amg-mcp.md](samples/3-remote-mcp-foundry-agent/foundry-agent-amg-mcp.md) - Step-by-step guide to setup AMG-MCP in Azure AI Foundry
+
 ## ⚙️ MCP Configuration
 
 To connect to the AMG-MCP endpoint, you need to configure your MCP client with the appropriate settings. AMG-MCP supports two authentication methods:
