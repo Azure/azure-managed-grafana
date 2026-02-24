@@ -29,6 +29,30 @@ To connect to the AMG-MCP endpoint, you need to configure your MCP client with t
 1. **Grafana Service Account Token** - A token generated from your Grafana instance (format: `glsa_xxx`)
 2. **Entra ID Token** - An Azure AD/Entra ID token (e.g., from a managed identity or service principal)
 
+### VS Code Configuration Example
+
+Add the following configuration to your VS Code MCP settings:
+
+```json
+{
+  "<your-grafana-mcp-server-name>": {
+    "type": "http",
+    "url": "https://<grafana-endpoint>/api/azure-mcp",
+    "headers": {
+      "Authorization": "Bearer <token>"
+    }
+  }
+}
+```
+
+**Configuration Parameters:**
+
+| Parameter | Description |
+|-----------|-------------|
+| `type` | Transport type. Use `http` for remote MCP endpoints. |
+| `url` | The AMG-MCP endpoint URL: `https://<grafana-endpoint>/api/azure-mcp` |
+| `headers.Authorization` | Bearer token - either a Grafana service account token or an Entra ID token. |
+
 ### Cline Configuration Example
 
 Add the following configuration to your Cline MCP settings:
@@ -107,5 +131,5 @@ Or use a managed identity to acquire a token programmatically with the audience 
 
 ## 📚 Links
 
-- Docs & samples: https://aka.ms/amg-mcp
+- AMG-MCP Doc: https://aka.ms/amg-mcp
 - If you encounter any issues, please open an issue here: https://aka.ms/managed-grafana/issues
