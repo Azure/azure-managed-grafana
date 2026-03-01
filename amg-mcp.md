@@ -10,10 +10,8 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 
 | Tool Name | Description |
 |-----------|-------------|
-| `amgmcp_dashboard_search` | Search for Grafana dashboards by a query string. Returns a list of matching dashboards with details like title, UID, folder, tags, and URL. |
-| `amgmcp_datasource_list` | List all Grafana data sources. |
-| `amgmcp_insights_get_agents` | Get GenAI agent insights. Returns GenAI agent related information from Application Insights, e.g. agent invocations, token usage, latency. Queries data following 'OpenTelemetry for Generative AI' Semantic Conventions. |
 | `amgmcp_insights_get_failures` | Get Failures insights. Returns failure summary data from Application Insights, e.g. failed requests, failed dependencies, exceptions. |
+| `amgmcp_insights_get_agents` | Get GenAI agent insights. Returns GenAI agent related information from Application Insights, e.g. agent invocations, token usage, latency. Queries data following 'OpenTelemetry for Generative AI' Semantic Conventions. |
 | `amgmcp_kusto_get_metadata` | Get the metadata for connected Azure Data Explorer (Kusto) clusters. Lists all Azure Data Explorer data sources, and for each data source, gets the clusterUrl, databases and schema. |
 | `amgmcp_kusto_query` | Query data in Azure Data Explorer (Kusto) cluster. |
 | `amgmcp_mssql_get_metadata` | Get the metadata for all connected Microsoft SQL Server data sources. Lists the databases, tables, and column schemas for each Microsoft SQL Server data source. |
@@ -24,6 +22,8 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 | `amgmcp_query_resource_log` | Query Azure Resource Log through Grafana Azure Monitor data source. |
 | `amgmcp_query_resource_metric` | Query Azure Resource Metric values through Grafana Azure Monitor data source. |
 | `amgmcp_query_resource_metric_definition` | Query Azure Resource Metric Definitions through Grafana Azure Monitor data source. |
+| `amgmcp_dashboard_search` | Search for Grafana dashboards by a query string. Returns a list of matching dashboards with details like title, UID, folder, tags, and URL. |
+| `amgmcp_datasource_list` | List all Grafana data sources. |
 
 ## 🔬 Samples
 
