@@ -10,18 +10,23 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 
 | Tool Name | Description |
 |-----------|-------------|
+| `amgmcp_prometheus_query` | Query Prometheus using a PromQL expression. Supports instant queries (single point) and range queries (time range). |
+| `amgmcp_prometheus_list_metric_names` | List metric names from a Prometheus datasource. Supports regex filtering and pagination. Call this first to discover metrics before querying. |
+| `amgmcp_prometheus_list_label_names` | List label names from a Prometheus datasource. Supports filtering by series selector and time range. |
+| `amgmcp_prometheus_query_histogram` | Compute histogram percentiles from Prometheus histogram metrics. Builds `histogram_quantile` PromQL from metric name, percentile, and optional labels. |
+| `amgmcp_pulse_check` | Perform automated health checks across Azure resources (PostgreSQL, Cosmos DB, AKS, Storage). Identifies resources with abnormal metrics such as high CPU, RU saturation, memory pressure, or degraded availability, and returns a prioritized summary of findings. |
+| `amgmcp_query_resource_graph` | Query Azure Resource Graph (ARG) through Grafana Azure Monitor data source. |
+| `amgmcp_query_resource_metric` | Query Azure Resource Metric values through Grafana Azure Monitor data source. |
+| `amgmcp_query_resource_metric_definition` | Query Azure Resource Metric Definitions through Grafana Azure Monitor data source. |
+| `amgmcp_query_resource_log` | Query Azure Resource Log through Grafana Azure Monitor data source. |
+| `amgmcp_query_azure_subscriptions` | List all the Azure subscriptions that the Grafana Azure Monitor data source can access. |
 | `amgmcp_insights_get_failures` | Get Failures insights. Returns failure summary data from Application Insights, e.g. failed requests, failed dependencies, exceptions. |
-| `amgmcp_insights_get_agents` | Get GenAI agent insights. Returns GenAI agent related information from Application Insights, e.g. agent invocations, token usage, latency. Queries data following 'OpenTelemetry for Generative AI' Semantic Conventions. |
+| `amgmcp_insights_get_agents` | Get GenAI agent insights. Returns GenAI agent related information from Application Insights, e.g. agent invocations, token usage, latency. Queries data following 'OpenTelemetry for Generative AI' Semantic Conventions, e.g. data emitted by OpenAI Python API, Google Cloud AI Agent Development Kit, Microsoft AI Foundry / Agent Toolkits, Microsoft Agent Framework, LangChain / LangGraph. |
+| `amgmcp_query_application_insights_trace` | Query Application Insights Trace through Grafana Azure Monitor data source. When trace data is stored in multiple Application Insights, this tool aggregates the data. |
 | `amgmcp_kusto_get_metadata` | Get the metadata for connected Azure Data Explorer (Kusto) clusters. Lists all Azure Data Explorer data sources, and for each data source, gets the clusterUrl, databases and schema. |
 | `amgmcp_kusto_query` | Query data in Azure Data Explorer (Kusto) cluster. |
 | `amgmcp_mssql_get_metadata` | Get the metadata for all connected Microsoft SQL Server data sources. Lists the databases, tables, and column schemas for each Microsoft SQL Server data source. |
 | `amgmcp_mssql_query` | Query data in a Microsoft SQL Server data source. |
-| `amgmcp_query_application_insights_trace` | Query Application Insights Trace through Grafana Azure Monitor data source. When trace data is stored in multiple Application Insights, this tool aggregates the data. |
-| `amgmcp_query_azure_subscriptions` | List all the Azure subscriptions that the Grafana Azure Monitor data source can access. |
-| `amgmcp_query_resource_graph` | Query Azure Resource Graph (ARG) through Grafana Azure Monitor data source. |
-| `amgmcp_query_resource_log` | Query Azure Resource Log through Grafana Azure Monitor data source. |
-| `amgmcp_query_resource_metric` | Query Azure Resource Metric values through Grafana Azure Monitor data source. |
-| `amgmcp_query_resource_metric_definition` | Query Azure Resource Metric Definitions through Grafana Azure Monitor data source. |
 | `amgmcp_dashboard_search` | Search for Grafana dashboards by a query string. Returns a list of matching dashboards with details like title, UID, folder, tags, and URL. |
 | `amgmcp_datasource_list` | List all Grafana data sources. |
 
