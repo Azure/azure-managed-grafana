@@ -1,0 +1,19 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Azure Managed Grafana</title>
+        <link>https://grafana.com/blog/</link>
+        <description>Recent content in Azure Managed Grafana</description>
+        <language>en</language>
+        <item>
+            <title>Azure Managed Grafana Remote MCP Server</title>
+            <meta property="og:image" content="https://raw.githubusercontent.com/Azure/azure-managed-grafana/refs/heads/main/rssfeed/images/amg-mcp.png"/>
+            <link>https://learn.microsoft.com/en-us/azure/managed-grafana/grafana-mcp-server/</link>
+            <pubDate>Mon, 16 Mar 2026</pubDate>
+            <author></author>
+            <guid>https://learn.microsoft.com/en-us/azure/managed-grafana/grafana-mcp-server/</guid>
+            <description>
+                &lt;p>&lt;em>With the MCP server, you can inquire your Grafana data and dashboards using just natural language! Learn more about how to configure it and use it with Microsoft Foundry agents.&lt;/em>&lt;/p>
+            </description>
+        </item>
+    </channel>
+</rss>
