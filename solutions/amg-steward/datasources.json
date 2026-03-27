@@ -1,0 +1,26 @@
+{
+  "AmgStewardOptions": {
+    "SyncInterval": "00:30:00",
+    "RunOnce": true,
+    "GrafanaEndpoints": [
+      {
+        "GrafanaEndpoint": "https://<your-grafana>.cus.grafana.azure.com",
+        "DatabricksDataSources": [
+          {
+            "DataSourceName": "my-databricks",
+            "DataSourceUid": "my-databricks-uid",
+            "Host": "adb-12345678901234.14.azuredatabricks.net",
+            "HttpPath": "sql/1.0/warehouses/abc123def456"
+          }
+        ],
+        "PrometheusDataSources": [
+          {
+            "DataSourceName": "my-prometheus",
+            "DataSourceUid": "my-prometheus-uid",
+            "Url": "https://<your-amw>.westus2.prometheus.monitor.azure.com"
+          }
+        ]
+      }
+    ]
+  }
+}
