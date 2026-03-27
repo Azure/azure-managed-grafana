@@ -108,7 +108,7 @@ AMG Steward reads its configuration from a JSON file. Create a file (e.g., `data
 The AMG Steward container image is available at:
 
 ```
-amgpublicacr.azurecr.io/amg-steward:3.2603.03371.1251-b3398a4d
+amgpublicacr.azurecr.io/amg-steward:3.2603.03372.1254-c62553df
 ```
 
 ### Example: Add a Databricks Data Source (Run Once)
@@ -118,7 +118,7 @@ amgpublicacr.azurecr.io/amg-steward:3.2603.03371.1251-b3398a4d
 2. Run the Docker image:
 
 ```bash
-docker run --rm -it -e USE_AZ_CLI_AUTH=true -v "$(pwd)/datasources.json:/app/datasources.json" amgpublicacr.azurecr.io/amg-steward:3.2603.03371.1251-b3398a4d --config-file /app/datasources.json
+docker run --rm -it -e USE_AZ_CLI_AUTH=true -v "$(pwd)/datasources.json:/app/datasources.json" amgpublicacr.azurecr.io/amg-steward:3.2603.03372.1254-c62553df --config-file /app/datasources.json
 ```
 
 Follow the device-code login prompt to authenticate, and the tool will sync the configured data sources and exit.
@@ -128,7 +128,7 @@ Follow the device-code login prompt to authenticate, and the tool will sync the 
 To run AMG Steward as a continuously running service that refreshes tokens every 30 minutes, set `RunOnce` to `false` (or omit it) in your configuration:
 
 ```bash
-docker run -d -v "$(pwd)/datasources.json:/app/datasources.json" amgpublicacr.azurecr.io/amg-steward:3.2603.03371.1251-b3398a4d --config-file /app/datasources.json
+docker run -d -v "$(pwd)/datasources.json:/app/datasources.json" amgpublicacr.azurecr.io/amg-steward:3.2603.03372.1254-c62553df --config-file /app/datasources.json
 ```
 
 In production, deploy as an **Azure Container App** with a managed identity instead of using Azure CLI authentication.
