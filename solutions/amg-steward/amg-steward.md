@@ -113,15 +113,21 @@ amgpublicacr.azurecr.io/amg-steward:3.2603.03372.1254-c62553df
 
 ### Example: Add a Databricks Data Source (Run Once)
 
-1. Download the sample configuration file [`datasources.json`](datasources.json) and update the placeholder values with your actual Grafana endpoint, Databricks host, and HTTP path.
-
-2. Run the Docker image:
+Replace the placeholder values below with your actual Grafana endpoint, Databricks host, HTTP path, and data source name/UID, then run:
 
 ```bash
-docker run --rm -it -e USE_AZ_CLI_AUTH=true -v "$(pwd)/datasources.json:/app/datasources.json" amgpublicacr.azurecr.io/amg-steward:3.2603.03372.1254-c62553df --config-file /app/datasources.json
+docker run --rm -it \
+  -e USE_AZ_CLI_AUTH=true \
+  amgpublicacr.azurecr.io/amg-steward:3.2603.03372.1254-c62553df \
+  --AmgStewardOptions:RunOnce=true \
+  --AmgStewardOptions:GrafanaEndpoints:0:GrafanaEndpoint=https://<your-grafana>.cus.grafana.azure.com \
+  --AmgStewardOptions:GrafanaEndpoints:0:DatabricksDataSources:0:DataSourceName=my-databricks \
+  --AmgStewardOptions:GrafanaEndpoints:0:DatabricksDataSources:0:DataSourceUid=<your-datasource-uid> \
+  --AmgStewardOptions:GrafanaEndpoints:0:DatabricksDataSources:0:Host=<your-workspace>.14.azuredatabricks.net \
+  --AmgStewardOptions:GrafanaEndpoints:0:DatabricksDataSources:0:HttpPath=sql/1.0/warehouses/<your-warehouse-id>
 ```
 
-Follow the device-code login prompt to authenticate, and the tool will sync the configured data sources and exit.
+Follow the device-code login prompt to authenticate, and the tool will sync the configured data source and exit.
 
 ### Long-Running Mode
 
