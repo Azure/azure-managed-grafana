@@ -6,6 +6,20 @@ AMG Steward is a containerized tool that keeps your Azure Managed Grafana data s
 
 AMG Steward can run as a **long-running sidecar** (periodically refreshing tokens on a configurable interval) or as a **one-shot CLI tool** (sync once and exit).
 
+## How It Works
+
+Some Azure data sources—like Prometheus and Databricks—require a bearer token in the `Authorization` header when querying data. Azure Managed Grafana stores this token as part of the data source configuration. However, Entra ID tokens expire (typically after one hour), so a static token will eventually stop working and dashboards will lose connectivity.
+
+AMG Steward solves this by continuously refreshing these tokens:
+
+1. **Acquire an Entra ID token** using the managed identity of its hosting environment (e.g., Azure Container Apps), or Azure CLI credentials for local development.
+2. **Authenticate to the Grafana API** using that token to gain access to the Grafana data source configuration.
+3. **Obtain a service-scoped Entra ID token** for each configured data source. For example, for a Prometheus data source, it requests a token scoped to Azure Monitor; for Databricks, a token scoped to the Databricks workspace.
+4. **Update the data source configuration** in Grafana via the HTTP API, setting the fresh token in the `Authorization: Bearer <token>` header that Grafana will use when querying the data source.
+5. **Repeat on a schedule.** In long-running mode, AMG Steward sleeps for the configured `SyncInterval` (default: 30 minutes) and then repeats the cycle, ensuring the token is always refreshed well before it expires.
+
+In run-once mode, AMG Steward performs a single sync cycle (steps 1–4) and then exits.
+
 ## Key Features
 
 - **Managed Identity Authentication**: Uses the managed identity of its hosting environment (e.g., Azure Container Apps) to acquire Entra ID tokens—no secrets to manage.
@@ -125,14 +139,6 @@ In production, deploy as an **Azure Container App** with a managed identity inst
 |----------|-------------|
 | `USE_AZ_CLI_AUTH` | Set to `true` for interactive Azure CLI device-code authentication (local development) |
 | `UserAssignedIdentityClientId` | Client ID of a user-assigned managed identity (optional; defaults to system-assigned) |
-
-## How It Works
-
-1. On startup, AMG Steward acquires an Entra ID token using its hosting environment's managed identity (or Azure CLI credentials for local development).
-2. It authenticates to the Azure Managed Grafana API using the token.
-3. For each configured data source, it obtains a fresh Entra ID token scoped to the target service (Databricks or Prometheus).
-4. It updates the data source credentials in Grafana via the Grafana HTTP API.
-5. In long-running mode, it repeats this cycle at the configured `SyncInterval`.
 
 ## Get Involved
 
