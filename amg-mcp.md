@@ -148,7 +148,8 @@ To configure MCP for Cline, use configuration settings similar to the following 
 
 ## Limitation
 
-Currently, AMG-MCP endpoint is included with Azure Managed Grafana instances only in Azure Public Cloud, not in sovereign clouds.
+- Currently, AMG-MCP endpoint is included with Azure Managed Grafana instances only in Azure Public Cloud, not in sovereign clouds.
+- Connecting to Azure Managed Grafana through a private endpoint is not supported for now.
 
 ## Troubleshooting
 
