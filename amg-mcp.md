@@ -114,11 +114,31 @@ When GitHub Copilot connects to the MCP server, it will prompt you to sign in wi
 
 ## Examples
 
-The following examples further demonstrate configuring AMG-MCP in your settings.
+The following examples demonstrate configuring AMG-MCP by client type.
 
-### Example 1: Visual Studio Code configuration
+### Example 1: Visual Studio Code with OAuth flow
 
-To configure MCP for Visual Studio Code, use configuration settings similar to the following example.
+VS Code with GitHub Copilot supports OAuth authentication with Entra ID. No manual token configuration is needed — the MCP client handles the OAuth flow automatically and prompts you to sign in with your Entra ID account.
+
+```json
+{
+  "<your-grafana-mcp-server-name>": {
+    "type": "http",
+    "url": "https://<grafana-endpoint>/api/azure-mcp"
+  }
+}
+```
+
+**Configuration parameters:**
+
+| Parameter | Description |
+|-----------|-------------|
+| `type` | Transport type. Use `http` for remote MCP endpoints. |
+| `url` | The AMG-MCP endpoint URL: `https://<grafana-endpoint>/api/azure-mcp` |
+
+### Example 2: Visual Studio Code with service account token
+
+To configure VS Code with a Grafana service account token, add the `Authorization` header with the token.
 
 ```json
 {
@@ -126,7 +146,7 @@ To configure MCP for Visual Studio Code, use configuration settings similar to t
     "type": "http",
     "url": "https://<grafana-endpoint>/api/azure-mcp",
     "headers": {
-      "Authorization": "Bearer <token>"
+      "Authorization": "Bearer glsa_xxxxxxxxxxxxxxxxxxxxxxxx_xxxxxxx"
     }
   }
 }
@@ -138,11 +158,11 @@ To configure MCP for Visual Studio Code, use configuration settings similar to t
 |-----------|-------------|
 | `type` | Transport type. Use `http` for remote MCP endpoints. |
 | `url` | The AMG-MCP endpoint URL: `https://<grafana-endpoint>/api/azure-mcp` |
-| `headers.Authorization` | Bearer token - either a Grafana service account token or an Entra ID token. |
+| `headers.Authorization` | Bearer token using a Grafana service account token (`glsa_xxx`). |
 
-### Example 2: Cline configuration
+### Example 3: Claude Code with service account token
 
-To configure MCP for Cline, use configuration settings similar to the following example.
+To configure MCP for Claude Code, use configuration settings similar to the following example. Use a Grafana service account token for authentication.
 
 ```json
 {
@@ -152,7 +172,7 @@ To configure MCP for Cline, use configuration settings similar to the following 
     "type": "streamableHttp",
     "url": "https://<grafana-endpoint>/api/azure-mcp",
     "headers": {
-      "Authorization": "Bearer <token>"
+      "Authorization": "Bearer glsa_xxxxxxxxxxxxxxxxxxxxxxxx_xxxxxxx"
     }
   }
 }
@@ -166,7 +186,39 @@ To configure MCP for Cline, use configuration settings similar to the following 
 | `timeout` | Connection timeout in seconds. |
 | `type` | Transport type. Use `streamableHttp` for remote MCP endpoints. |
 | `url` | The AMG-MCP endpoint URL: `https://<grafana-endpoint>/api/azure-mcp` |
-| `headers.Authorization` | Bearer token - either a Grafana service account token or an Entra ID token. |
+| `headers.Authorization` | Bearer token using a Grafana service account token (`glsa_xxx`). |
+
+### Example 4: OpenClaw with service account token
+
+To configure MCP for OpenClaw, use the `openclaw mcp set` command with a Grafana service account token.
+
+```bash
+openclaw mcp set mcp '{"url":"https://<grafana-endpoint>/api/azure-mcp","transport":"streamable-http","headers":{"Authorization":"Bearer glsa_xxxxxxxxxxxxxxxxxxxxxxxx_xxxxxxx"}}'
+```
+
+Then restart the gateway to pick up the configuration:
+
+```bash
+openclaw gateway restart
+```
+
+### Example 5: Foundry agent with managed identity
+
+To configure AMG-MCP in Azure AI Foundry, use a managed identity to acquire an Entra ID token. See [foundry-agent-amg-mcp.md](samples/3-remote-mcp-foundry-agent/foundry-agent-amg-mcp.md) for a step-by-step guide.
+
+The managed identity must be granted an appropriate Grafana role (e.g., Grafana Viewer or Grafana Editor) on the Azure Managed Grafana instance. The Entra ID token is acquired using the Azure Managed Grafana audience `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f`.
+
+```json
+{
+  "<your-grafana-mcp-server-name>": {
+    "type": "streamableHttp",
+    "url": "https://<grafana-endpoint>/api/azure-mcp",
+    "headers": {
+      "Authorization": "Bearer <entra-id-token-from-managed-identity>"
+    }
+  }
+}
+```
 
 ## Limitation
 
