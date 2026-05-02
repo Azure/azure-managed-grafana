@@ -17,6 +17,11 @@ This guide walks through the end-to-end ingestion pipeline: running an OpenTelem
 - An **OpenTelemetry Collector** terminates OTLP at that endpoint and forwards the data to Application Insights using the Azure Monitor Exporter.
 - **Grafana** queries Application Insights via the Azure Monitor data source (Log Analytics / KQL) to render the dashboards.
 
+## Prerequisites
+
+- An Application Insights resource. If you don't have one yet, [create one and attach it to a Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource).
+- [Docker installed.](https://docs.docker.com/engine/install/)
+
 ## 1. Run the OpenTelemetry Collector
 
 Deploy an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) (the `contrib` distribution) configured with the [Azure Monitor Exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azuremonitorexporter). The collector is what bridges OTLP to the Application Insights ingestion API.
@@ -26,9 +31,9 @@ Deploy an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) (t
 The collector needs an Application Insights **connection string** to export telemetry. To retrieve it from the Azure Portal:
 
 1. Sign in to the [Azure Portal](https://portal.azure.com/).
-2. Navigate to your **Application Insights** resource. If you don't have one yet, create it (Create a resource → **Application Insights**) and attach it to a Log Analytics workspace.
+2. Navigate to your **Application Insights** resource.
 3. In the left menu, select **Overview**.
-4. Locate the **Connection String** field in the Essentials panel and click the copy icon next to it.
+4. Locate the **Connection String** field in the Essentials panel and select the copy icon next to it.
 
 The value looks like:
 
