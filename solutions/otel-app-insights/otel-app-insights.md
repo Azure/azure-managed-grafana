@@ -1,32 +1,61 @@
-# Ingesting Data into Application Insights via OpenTelemetry Collector
+# Monitoring AI Coding Agents with Grafana
 
-Several Azure Managed Grafana dashboards — [GitHub Copilot](https://aka.ms/amg/dash/gh-copilot), [Claude Code](https://aka.ms/amg/dash/claude-code), and [OpenClaw](https://aka.ms/amg/dash/openclaw) — visualize telemetry that flows into **Azure Application Insights** via **OpenTelemetry (OTLP)**.
+AI coding agents — GitHub Copilot, Claude Code, OpenClaw, and others — are quickly becoming part of how engineering teams ship software. Adoption is the easy part. The harder questions follow soon after:
 
-This guide walks through the end-to-end ingestion pipeline: running an OpenTelemetry Collector with the Azure Monitor Exporter, then pointing each source application at it.
+- **How much are we spending?** Which models, which teams, which tasks drive the cost?
+- **Who is actually using which agent, and for what?** Are tools being invoked the way we expect?
+- **Is the experience reliable?** Where do agents stall, error out, or leave sessions stuck?
+- **Can we audit what the agents did?** Prompts, tool calls, model choices — for security and compliance review.
 
-> **Support boundaries.** The OpenTelemetry Collector (including the `contrib` distribution) and the [Azure Monitor Exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azuremonitorexporter) are open-source components. Support for these components is provided exclusively through community channels. To submit bug reports, request new features, or report other issues, create a new issue in the [opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues) repository. Microsoft Azure Support covers the Azure services in this pipeline: Application Insights, Log Analytics, and Azure Managed Grafana.
+Grafana gives you a single pane of glass for these questions across multiple coding agents. This guide shows how to set it up end-to-end: standing up the telemetry pipeline, pointing each agent at it, and importing the ready-made dashboards.
 
-## Architecture
+> **Support boundaries.** The OpenTelemetry Collector (including the `contrib` distribution) and the [Azure Monitor Exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azuremonitorexporter) are open-source components. Support for these components is provided exclusively through community channels. To submit bug reports, request new features, or report other issues, create a new issue in the [opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues) repository. Microsoft Azure Support covers the Azure services in this pipeline: Application Insights, Log Analytics, and Grafana.
+
+## What you'll see
+
+Three purpose-built Grafana dashboards visualize the signals that matter for AI coding agents — cost, token consumption, sessions, model usage, tool invocations, latency, and errors:
+
+| Dashboard | What it shows | Link |
+| --- | --- | --- |
+| [GitHub Copilot](https://aka.ms/amg/dash/gh-copilot) | Operations, input/output tokens, chat sessions, tool calls, response time and TTFT by model | `aka.ms/amg/dash/gh-copilot` |
+| [Claude Code](https://aka.ms/amg/dash/claude-code) | Cost, sessions, user prompts, API requests/errors, daily cost and token trends, per-model breakdown, tool usage analytics | `aka.ms/amg/dash/claude-code` |
+| [OpenClaw](https://aka.ms/amg/dash/openclaw) | Messages, unique chats, response time, LLM calls, token usage, cache reads, stuck sessions, model usage breakdown | `aka.ms/amg/dash/openclaw` |
+
+![Claude Code dashboard](./attachments/claude-code-main.png)
+
+## Who this is for
+
+The same dashboards serve different audiences:
+
+- **Platform and DevEx teams** — track adoption trends, spend by team and model, and surface inefficient usage patterns.
+- **Engineering leaders** — correlate agent activity with delivery and answer "is this investment paying off?"
+- **Security and governance teams** — review prompts, tool invocations, and model choices for compliance and risk.
+- **Individual developers and oncall engineers** — debug agent behavior, slow tool calls, or stuck sessions.
+
+## How it works
 
 ```
 ┌───────────────┐    OTLP/HTTP    ┌──────────────────┐    Azure Monitor    ┌──────────────────┐              ┌──────────┐
-│  Application  │ ──────────────> │  OTel Collector  │ ────── Exporter ──> │    Application   │ <─── KQL ─── │ Grafana  │
-│   (source)    │                 │                  │                     │     Insights     │              │ dashboard│
+│  AI coding    │ ──────────────> │  OTel Collector  │ ────── Exporter ──> │    Application   │ <─── KQL ─── │ Grafana  │
+│    agent      │                 │                  │                     │     Insights     │              │ dashboard│
 └───────────────┘                 └──────────────────┘                     └──────────────────┘              └──────────┘
 ```
 
-- Each **source application** (GitHub Copilot / Claude Code / OpenClaw) emits OTLP traces, metrics, and logs to a configured endpoint.
+- Each **AI coding agent** (GitHub Copilot / Claude Code / OpenClaw) emits OpenTelemetry traces, metrics, and logs to a configured OTLP endpoint.
 - An **OpenTelemetry Collector** terminates OTLP at that endpoint and forwards the data to Application Insights using the Azure Monitor Exporter.
 - **Grafana** queries Application Insights via the Azure Monitor data source (Log Analytics / KQL) to render the dashboards.
+
+The OTLP collector and Application Insights pipeline are infrastructure — a one-time setup. The rest of this guide walks through it.
 
 ## Prerequisites
 
 - An Application Insights resource. If you don't have one yet, [create one and attach it to a Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource).
 - [Docker installed.](https://docs.docker.com/engine/install/)
+- An Grafana instance with an Azure Monitor data source that can read your Application Insights resource. [Grafana 11.6+ is required](https://learn.microsoft.com/en-us/azure/managed-grafana/) for these dashboards.
 
-## 1. Run the OpenTelemetry Collector
+## Step 1. Run the OpenTelemetry Collector
 
-Deploy an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) (the `contrib` distribution) configured with the [Azure Monitor Exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azuremonitorexporter). The collector is what bridges OTLP to the Application Insights ingestion API.
+Deploy an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/) (the `contrib` distribution) configured with the [Azure Monitor Exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azuremonitorexporter). The collector bridges OTLP from each agent to the Application Insights ingestion API.
 
 > **Alternative — native OTLP ingestion in Azure Monitor (Preview).** Azure Monitor also supports native OTLP ingestion as an alternative to the path shown in this guide. The dashboards work with either path because data lands in the same Application Insights / Log Analytics tables. See [Ingest OTLP data into Azure Monitor with the OpenTelemetry Collector (Preview)](https://learn.microsoft.com/en-us/azure/azure-monitor/containers/opentelemetry-protocol-ingestion).
 
@@ -85,11 +114,11 @@ docker run -d --name otel-collector -p 4318:4318 -p 4317:4317 -v $(pwd)/otel-col
 
 Notes:
 - The examples below assume the collector is running locally, reachable at `http://localhost:4318`. For a shared/remote collector, substitute your own endpoint.
-- The OTLP/HTTP receiver listens on port `4318` by default; all three applications documented here use OTLP/HTTP.
+- The OTLP/HTTP receiver listens on port `4318` by default; all three agents documented here use OTLP/HTTP.
 
-## 2. Configure each application
+## Step 2. Point each AI coding agent at the collector
 
-Each application is pointed at the collector's OTLP/HTTP endpoint.
+Each agent has its own way to enable OpenTelemetry export. The shared target is the collector's OTLP/HTTP endpoint.
 
 ### GitHub Copilot
 
@@ -107,6 +136,8 @@ Add to VS Code `settings.json`:
     "github.copilot.chat.otel.captureContent": true
 }
 ```
+
+The Copilot dashboard surfaces total operations, input/output tokens, chat sessions, tool calls, and per-model latency (average duration, P50/P90 TTFT) — useful for spotting model-mix drift and slow tools.
 
 ### Claude Code
 
@@ -131,7 +162,9 @@ Add to the Claude Code `settings.json`:
 }
 ```
 
-Tip: `OTEL_LOG_USER_PROMPTS` and `OTEL_LOG_TOOL_DETAILS` enrich the dashboard's per-user and tool-usage panels. Omit them if you prefer not to capture prompt text.
+Tip: `OTEL_LOG_USER_PROMPTS` and `OTEL_LOG_TOOL_DETAILS` enrich the dashboard's per-user and tool-usage panels. Omit them if you prefer not to capture prompt text — for example, in regulated environments where prompts may contain sensitive content.
+
+The Claude Code dashboard breaks down daily cost and token usage by model, shows API errors, and ranks the most-invoked tools — useful for managing spend and catching tool-call regressions.
 
 ### OpenClaw
 
@@ -157,9 +190,11 @@ Add to the gateway's telemetry config:
 
 Important: `serviceName` must be `openclaw-gateway`. The OpenClaw dashboard filters by `cloud_RoleName == "openclaw-gateway"`, which is derived from this field.
 
-## 3. Verify data in Application Insights
+The OpenClaw dashboard tracks messages by channel, response-time percentiles, cache-read tokens, and stuck sessions — useful for chat-style deployments where session health and cache efficiency drive both cost and user experience.
 
-Once both the applications and the collector are running, confirm telemetry is arriving:
+## Step 3. Verify data is reaching Application Insights
+
+Once the agents and the collector are running, confirm telemetry is arriving before importing the dashboards:
 
 1. Azure Portal → your Application Insights resource → **Logs**
 2. Run a KQL check for each source:
@@ -188,19 +223,25 @@ dependencies
 | take 50
 ```
 
-If rows come back, the pipeline is working. If not, check the collector logs for export errors (typical culprits: wrong connection string, blocked egress, or a firewalled OTLP endpoint).
+If rows come back, the pipeline is working. If not, check the collector logs for export errors — typical culprits are a wrong connection string, blocked egress to the Application Insights ingestion endpoint, or a firewalled OTLP receiver port.
 
-## 4. Import the dashboards into Grafana
+## Step 4. Import the dashboards into Grafana or access them in Azure portal
 
 Each dashboard has its own import and variables reference:
 
-- [Claude Code](https://aka.ms/amg/dash/claude-code)
 - [GitHub Copilot](https://aka.ms/amg/dash/gh-copilot)
+- [Claude Code](https://aka.ms/amg/dash/claude-code)
 - [OpenClaw](https://aka.ms/amg/dash/openclaw)
 
 All three require **Grafana 11.6+** with an **Azure Monitor data source** that has access to the subscription containing your Application Insights resource.
 
-> **Tip — same dashboards in the Azure Portal.** These dashboards are also available natively in the Azure Portal as Azure Monitor dashboards with Grafana (Helios), with no separate Azure Managed Grafana instance required. See [Use Azure Monitor dashboards with Grafana](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/visualize-use-grafana-dashboards).
+> **Tip — same dashboards in the Azure Portal.** These dashboards are also available natively in the Azure Portal as Azure Monitor dashboards with Grafana (Helios), with no separate Grafana instance required. See [Use Azure Monitor dashboards with Grafana](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/visualize-use-grafana-dashboards).
+
+## Where to go from here
+
+- **Add more agents.** The same collector handles any OTLP-emitting tool. As your team adopts new coding agents, point them at the same endpoint and contribute or build a dashboard.
+- **Set alerts.** Use Application Insights alert rules or Grafana alerting against the same data — for example, on daily cost above a threshold, sustained API error rate, or stuck-session count.
+- **Share with stakeholders.** Pin the dashboards to a Grafana playlist or embed selected panels in your team's status pages so adoption, cost, and reliability stay visible to leadership.
 
 ## References
 
