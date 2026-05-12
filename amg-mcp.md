@@ -2,7 +2,7 @@
 
 > **Note:** This document describes the **remote MCP server endpoint** that is built into every Azure Managed Grafana instance. For the **self-hosted MCP server** that you can run locally, see [amg-mcp-local.md](https://github.com/Azure/azure-managed-grafana/blob/main/amg-mcp-local.md).
 
-Every Azure Managed Grafana instance (in Azure Public Cloud, except sovereign clouds for now) includes a built-in remote MCP server endpoint called AMG-MCP. The endpoint path is `https://<grafana-endpoint>/api/azure-mcp`, e.g. `https://my-grafana-d5ggtqegcr2safcp.wcus.grafana.azure.com/api/azure-mcp`. This allows tools and applications to interact programmatically with the Grafana instance using the Model Context Protocol (MCP). The AMG-MCP endpoint is using the same authentication mechanism as the Grafana instance, supporting both Entra ID and the Grafana service account token.
+Every Azure Managed Grafana instance (in Azure Public Cloud, except sovereign clouds for now) includes a built-in remote MCP server endpoint called AMG-MCP. The endpoint path is `https://<grafana-endpoint>/api/azure-mcp`, e.g. `https://my-grafana-d5ggtqegcr2safcp.wcus.grafana.azure.com/api/azure-mcp`. This allows tools and applications to interact programmatically with the Grafana instance using the Model Context Protocol (MCP). The AMG-MCP endpoint uses the same authentication mechanism as the Grafana instance, supporting both Microsoft Entra ID and the Grafana service account token.
 
 ## Available MCP tools
 
@@ -10,25 +10,25 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 
 | Tool Name | Description |
 |-----------|-------------|
-| `amgmcp_prometheus_query` | Query Prometheus using a PromQL expression. Supports instant queries (single point) and range queries (time range). |
-| `amgmcp_prometheus_list_metric_names` | List metric names from a Prometheus datasource. Supports regex filtering and pagination. Call this first to discover metrics before querying. |
-| `amgmcp_prometheus_list_label_names` | List label names from a Prometheus datasource. Supports filtering by series selector and time range. |
-| `amgmcp_prometheus_query_histogram` | Compute histogram percentiles from Prometheus histogram metrics. Builds `histogram_quantile` PromQL from metric name, percentile, and optional labels. |
-| `amgmcp_pulse_check` | Perform automated health checks across Azure resources (PostgreSQL, Cosmos DB, AKS, Storage). Identifies resources with abnormal metrics such as high CPU, RU saturation, memory pressure, or degraded availability, and returns a prioritized summary of findings. |
-| `amgmcp_query_resource_graph` | Query Azure Resource Graph (ARG) through Grafana Azure Monitor data source. |
-| `amgmcp_query_resource_metric` | Query Azure Resource Metric values through Grafana Azure Monitor data source. |
-| `amgmcp_query_resource_metric_definition` | Query Azure Resource Metric Definitions through Grafana Azure Monitor data source. |
-| `amgmcp_query_resource_log` | Query Azure Resource Log through Grafana Azure Monitor data source. |
-| `amgmcp_query_azure_subscriptions` | List all the Azure subscriptions that the Grafana Azure Monitor data source can access. |
-| `amgmcp_insights_get_failures` | Get Failures insights. Returns failure summary data from Application Insights, e.g. failed requests, failed dependencies, exceptions. |
-| `amgmcp_insights_get_agents` | Get GenAI agent insights. Returns GenAI agent related information from Application Insights, e.g. agent invocations, token usage, latency. Queries data following 'OpenTelemetry for Generative AI' Semantic Conventions, e.g. data emitted by OpenAI Python API, Google Cloud AI Agent Development Kit, Microsoft AI Foundry / Agent Toolkits, Microsoft Agent Framework, LangChain / LangGraph. |
-| `amgmcp_query_application_insights_trace` | Query Application Insights Trace through Grafana Azure Monitor data source. When trace data is stored in multiple Application Insights, this tool aggregates the data. |
-| `amgmcp_kusto_get_metadata` | Get the metadata for connected Azure Data Explorer (Kusto) clusters. Lists all Azure Data Explorer data sources, and for each data source, gets the clusterUrl, databases and schema. |
-| `amgmcp_kusto_query` | Query data in Azure Data Explorer (Kusto) cluster. |
-| `amgmcp_mssql_get_metadata` | Get the metadata for all connected Microsoft SQL Server data sources. Lists the databases, tables, and column schemas for each Microsoft SQL Server data source. |
-| `amgmcp_mssql_query` | Query data in a Microsoft SQL Server data source. |
-| `amgmcp_dashboard_search` | Search for Grafana dashboards by a query string. Returns a list of matching dashboards with details like title, UID, folder, tags, and URL. |
-| `amgmcp_datasource_list` | List all Grafana data sources. |
+| `amgmcp_prometheus_query` | Queries Prometheus using a PromQL expression. Supports instant queries (single point) and range queries (time range). |
+| `amgmcp_prometheus_list_metric_names` | Lists metric names from a Prometheus data source. Supports regex filtering and pagination. Call this first to discover metrics before querying. |
+| `amgmcp_prometheus_list_label_names` | Lists label names from a Prometheus data source. Supports filtering by series selector and time range. |
+| `amgmcp_prometheus_query_histogram` | Computes histogram percentiles from Prometheus histogram metrics. Builds `histogram_quantile` PromQL from metric name, percentile, and optional labels. |
+| `amgmcp_pulse_check` | Performs automated health checks across Azure resources (PostgreSQL, Cosmos DB, AKS, Storage). Identifies resources with abnormal metrics such as high CPU, RU saturation, memory pressure, or degraded availability, and returns a prioritized summary of findings. |
+| `amgmcp_query_resource_graph` | Queries Azure Resource Graph through a Grafana Azure Monitor data source. |
+| `amgmcp_query_resource_metric` | Queries Azure resource metric values through a Grafana Azure Monitor data source. |
+| `amgmcp_query_resource_metric_definition` | Queries Azure resource metric definitions through a Grafana Azure Monitor data source. |
+| `amgmcp_query_resource_log` | Queries an Azure resource log through a Grafana Azure Monitor data source. |
+| `amgmcp_query_azure_subscriptions` | Lists all the Azure subscriptions that the Grafana Azure Monitor data source can access. |
+| `amgmcp_insights_get_failures` | Gets failure insights. Returns failure summary data from Application Insights, such as failed requests, failed dependencies, and exceptions. |
+| `amgmcp_insights_get_agents` | Gets generative AI agent insights. Returns information related to generative AI agents from Application Insights, such as agent invocations, token usage, and latency. Queries data following 'OpenTelemetry for Generative AI' Semantic Conventions, e.g. data emitted by OpenAI Python API, Google Cloud AI Agent Development Kit, Microsoft AI Foundry / Agent Toolkits, Microsoft Agent Framework, LangChain / LangGraph. |
+| `amgmcp_query_application_insights_trace` | Queries an Application Insights trace through a Grafana Azure Monitor data source. When trace data is stored in multiple Application Insights instances, this tool aggregates the data. |
+| `amgmcp_kusto_get_metadata` | Gets the metadata for connected Azure Data Explorer (Kusto) clusters. Lists all Azure Data Explorer data sources, and for each data source, gets the URL of the cluster, databases, and schema. |
+| `amgmcp_kusto_query` | Queries data in an Azure Data Explorer (Kusto) cluster. |
+| `amgmcp_mssql_get_metadata` | Gets the metadata for all connected Microsoft SQL Server data sources. Lists the databases, tables, and column schemas for each SQL Server data source. |
+| `amgmcp_mssql_query` | Queries data in a SQL Server data source. |
+| `amgmcp_dashboard_search` | Searches for Grafana dashboards by a query string. Returns a list of matching dashboards with details like title, UID, folder, tags, and URL. |
+| `amgmcp_datasource_list` | Lists all Grafana data sources. |
 
 ## Samples
 
@@ -38,18 +38,18 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 
 To connect to the AMG-MCP endpoint, you need to configure your MCP client with the appropriate settings. AMG-MCP supports the following authentication methods:
 
-- **Grafana service account token:** A token generated from your Grafana instance (format: `glsa_xxx`)
-- **Entra ID token:** An Azure AD/Entra ID token (e.g., from a managed identity or service principal)
-- **OAuth authentication with Entra ID:** An interactive browser-based login flow. The MCP client handles the OAuth flow automatically. Supported by Visual Studio Code with GitHub Copilot and Visual Studio with GitHub Copilot.
+- **Grafana service account token:** A token generated from your Grafana instance. The format is `glsa_xxx`.
+- **Microsoft Entra ID token:** A Microsoft Entra ID token (for example, from a managed identity or service principal).
+- **OAuth authentication with Microsoft Entra ID:** An interactive browser-based login flow. The MCP client handles the OAuth flow automatically. Supported by Visual Studio Code with GitHub Copilot and Visual Studio with GitHub Copilot.
 
 ### Grafana service account token
 
 Use a Grafana service account token for authentication. Start by creating a token:
 
-1. In the Grafana instance UI, navigate to **Administration > Service accounts**.
+1. In the Grafana instance UI, go to **Administration > Service accounts**.
 1. Create a new service account with the appropriate permissions.
 1. Generate a token.
-1. Copy the Grafana service account token (format: `glsa_xxx`) and paste into your configuration settings:
+1. Copy the Grafana service account token with the format `glsa_xxx`. Paste it into your configuration settings:
 
     ```json
     {
@@ -65,17 +65,17 @@ Use a Grafana service account token for authentication. Start by creating a toke
     }
     ```
 
-### Entra ID token
+### Microsoft Entra ID token
 
-Use an Entra ID token (Azure AD token) for authentication. This approach is useful when using managed identities or service principals.
+Use a Microsoft Entra ID token for authentication. This approach is useful when you're using managed identities or service principals.
 
-1. Use the Azure CLI to obtain an Entra ID token associated with the Azure Managed Grafana resource ID:
+- Use the Azure CLI to obtain a Microsoft Entra ID token that's associated with the Azure Managed Grafana resource ID:
 
     ```bash
     az account get-access-token --resource ce34e7e5-485f-4d76-964f-b3d2b16d1e4f --query accessToken -o tsv
     ```
 
-1. Alternatively, use a managed identity to acquire a token programmatically with the Azure Managed Grafana audience `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f`.
+- Alternatively, use a managed identity to programmatically acquire a token with the Azure Managed Grafana audience `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f`.
 
     ```json
     {
@@ -91,13 +91,14 @@ Use an Entra ID token (Azure AD token) for authentication. This approach is usef
     }
     ```
 
-### OAuth authentication with Entra ID
+### OAuth authentication with Microsoft Entra ID
 
-AMG-MCP supports OAuth authentication using Entra ID. No manual token configuration is needed. The following clients are supported:
+AMG-MCP supports OAuth authentication by using Microsoft Entra ID. No manual token configuration is needed. The following clients are supported:
+
 - Visual Studio Code with GitHub Copilot
 - Visual Studio with GitHub Copilot
 
-In your VS Code or Visual Studio MCP configuration settings, add the following:
+In your Visual Studio Code or Visual Studio MCP configuration, add the following setting. Replace `<grafana-endpoint>` with your Grafana endpoint.
 
 ```json
 {
@@ -110,7 +111,7 @@ In your VS Code or Visual Studio MCP configuration settings, add the following:
 }
 ```
 
-When GitHub Copilot connects to the MCP server, it will prompt you to sign in with your Entra ID account.
+When GitHub Copilot connects to the MCP server, it prompts you to sign in with your Microsoft Entra ID account.
 
 ## Examples
 
@@ -118,7 +119,7 @@ The following examples demonstrate configuring AMG-MCP by client type.
 
 ### Example 1: Visual Studio Code with OAuth flow
 
-VS Code with GitHub Copilot supports OAuth authentication with Entra ID. No manual token configuration is needed — the MCP client handles the OAuth flow automatically and prompts you to sign in with your Entra ID account.
+Visual Studio Code with GitHub Copilot supports OAuth authentication with Microsoft Entra ID. No manual token configuration is needed — the MCP client handles the OAuth flow automatically and prompts you to sign in with your Microsoft Entra ID account.
 
 ```json
 {
@@ -138,7 +139,7 @@ VS Code with GitHub Copilot supports OAuth authentication with Entra ID. No manu
 
 ### Example 2: Visual Studio Code with service account token
 
-To configure VS Code with a Grafana service account token, add the `Authorization` header with the token.
+To configure Visual Studio Code with a Grafana service account token, add the `Authorization` header with the token.
 
 ```json
 {
@@ -204,9 +205,9 @@ openclaw gateway restart
 
 ### Example 5: Foundry agent with managed identity
 
-To configure AMG-MCP in Azure AI Foundry, use a managed identity to acquire an Entra ID token. See [foundry-agent-amg-mcp.md](samples/3-remote-mcp-foundry-agent/foundry-agent-amg-mcp.md) for a step-by-step guide.
+To configure AMG-MCP in Azure AI Foundry, use a managed identity to acquire a Microsoft Entra ID token. See [foundry-agent-amg-mcp.md](samples/3-remote-mcp-foundry-agent/foundry-agent-amg-mcp.md) for a step-by-step guide.
 
-The managed identity must be granted an appropriate Grafana role (e.g., Grafana Viewer or Grafana Editor) on the Azure Managed Grafana instance. The Entra ID token is acquired using the Azure Managed Grafana audience `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f`.
+The managed identity must be granted an appropriate Grafana role (e.g., Grafana Viewer or Grafana Editor) on the Azure Managed Grafana instance. The Microsoft Entra ID token is acquired using the Azure Managed Grafana audience `ce34e7e5-485f-4d76-964f-b3d2b16d1e4f`.
 
 ```json
 {
@@ -220,14 +221,14 @@ The managed identity must be granted an appropriate Grafana role (e.g., Grafana 
 }
 ```
 
-## Limitation
+## Limitations
 
-- Currently, AMG-MCP endpoint is included with Azure Managed Grafana instances only in Azure Public Cloud, not in sovereign clouds.
+- Currently, the AMG-MCP endpoint is included with Azure Managed Grafana for only Azure public cloud instances, not for sovereign clouds.
 - Connecting to Azure Managed Grafana through a private endpoint is not supported for now.
 
 ## Troubleshooting
 
-If you encounter any issues, open an issue in the [Azure Managed Grafana GitHub repo](https://aka.ms/managed-grafana/issues).
+If you encounter any problems, open an issue in the [Azure Managed Grafana GitHub repo](https://aka.ms/managed-grafana/issues).
 
 ## Links
 
