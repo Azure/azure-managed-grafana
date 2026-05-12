@@ -10,11 +10,14 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 
 | Tool Name | Description |
 |-----------|-------------|
+| `amgmcp_dashboard_search` | Searches for Grafana dashboards by a query string. Returns a list of matching dashboards with details like title, UID, folder, tags, and URL. |
+| `amgmcp_dashboard_inspect` | Inspects a Grafana dashboard. Supports summary mode, panel queries mode (with optional template variable substitution), and property mode (surgical JSONPath reads against the raw dashboard JSON). |
+| `amgmcp_dashboard_update` | Creates, replaces, or patches a Grafana dashboard. Supports full dashboard JSON for create/replace, or targeted patch operations (add, replace, remove) using JSONPath for surgical modifications. |
 | `amgmcp_prometheus_query` | Queries Prometheus using a PromQL expression. Supports instant queries (single point) and range queries (time range). |
 | `amgmcp_prometheus_list_metric_names` | Lists metric names from a Prometheus data source. Supports regex filtering and pagination. Call this first to discover metrics before querying. |
 | `amgmcp_prometheus_list_label_names` | Lists label names from a Prometheus data source. Supports filtering by series selector and time range. |
 | `amgmcp_prometheus_query_histogram` | Computes histogram percentiles from Prometheus histogram metrics. Builds `histogram_quantile` PromQL from metric name, percentile, and optional labels. |
-| `amgmcp_pulse_check` | Performs automated health checks across Azure resources (PostgreSQL, Cosmos DB, AKS, Storage). Identifies resources with abnormal metrics such as high CPU, RU saturation, memory pressure, or degraded availability, and returns a prioritized summary of findings. |
+| `amgmcp_pulse_check` | Performs automated health checks across Azure resources (PostgreSQL, Cosmos DB, AKS, Storage, Key Vault, VMs, SQL Database, App Service Plans, Redis, Logic Apps). Identifies resources with abnormal metrics such as high CPU, RU saturation, memory pressure, or degraded availability. Also generates usage summaries for storage accounts and key vaults. Returns a prioritized summary of findings. |
 | `amgmcp_query_resource_graph` | Queries Azure Resource Graph through a Grafana Azure Monitor data source. |
 | `amgmcp_query_resource_metric` | Queries Azure resource metric values through a Grafana Azure Monitor data source. |
 | `amgmcp_query_resource_metric_definition` | Queries Azure resource metric definitions through a Grafana Azure Monitor data source. |
@@ -27,8 +30,11 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 | `amgmcp_kusto_query` | Queries data in an Azure Data Explorer (Kusto) cluster. |
 | `amgmcp_mssql_get_metadata` | Gets the metadata for all connected Microsoft SQL Server data sources. Lists the databases, tables, and column schemas for each SQL Server data source. |
 | `amgmcp_mssql_query` | Queries data in a SQL Server data source. |
-| `amgmcp_dashboard_search` | Searches for Grafana dashboards by a query string. Returns a list of matching dashboards with details like title, UID, folder, tags, and URL. |
-| `amgmcp_datasource_list` | Lists all Grafana data sources. |
+| `amgmcp_query_resource_health` | Queries Azure Resource Health availability status for a subscription, resource group, or single resource. Supports current status and historical availability transitions. |
+| `amgmcp_query_resource_health_events` | Queries Azure Resource Health service-health events (service issues, planned maintenance, health advisories, security advisories, RCAs, emerging issues, billing events) at subscription or single-resource scope. |
+| `amgmcp_query_activity_log` | Queries Azure Activity Log to investigate management-plane operations (creates, deletes, updates, RBAC changes, deployments, etc.) on Azure resources. |
+| `amgmcp_cost_analysis` | Shows Azure cost analysis. Breaks down costs by resource type, region, and service category (MeterCategory). Supports querying a single subscription or all accessible subscriptions. |
+| `amgmcp_datasource_list` | Lists all Grafana data sources. Optionally filters by datasource type. |
 
 ## Samples
 
