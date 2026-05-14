@@ -109,12 +109,13 @@ service:
 Save the config above as `otel-collector-config.yaml`, then start the collector with the `contrib` image (which includes the Azure Monitor exporter):
 
 ```bash
-docker run -d --name otel-collector -p 4318:4318 -p 4317:4317 -v $(pwd)/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml otel/opentelemetry-collector-contrib:latest
+docker run -d --name otel-collector --restart unless-stopped -p 4318:4318 -p 4317:4317 -v $(pwd)/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml otel/opentelemetry-collector-contrib:latest
 ```
 
 Notes:
 - The examples below assume the collector is running locally, reachable at `http://localhost:4318`. For a shared/remote collector, substitute your own endpoint.
 - The OTLP/HTTP receiver listens on port `4318` by default; all three agents documented here use OTLP/HTTP.
+- `--restart unless-stopped` keeps the collector running across Docker Desktop or machine restarts. If you omit it, the container may remain stopped after a restart until you manually start it again.
 
 ## Step 2. Point each AI coding agent at the collector
 
