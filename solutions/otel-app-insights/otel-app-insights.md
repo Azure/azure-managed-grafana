@@ -176,21 +176,9 @@ Add to the global Codex `config.toml`:
 [otel]
 environment = "devbox"
 log_user_prompt = true
-exporter = "otlp-http"
-trace_exporter = "otlp-http"
-metrics_exporter = "otlp-http"
-
-[otel.exporter."otlp-http"]
-endpoint = "http://localhost:4318/v1/logs"
-protocol = "binary"
-
-[otel.trace_exporter."otlp-http"]
-endpoint = "http://localhost:4318/v1/traces"
-protocol = "binary"
-
-[otel.metrics_exporter."otlp-http"]
-endpoint = "http://localhost:4318/v1/metrics"
-protocol = "binary"
+exporter = { otlp-http = { endpoint = "http://localhost:4318/v1/logs", protocol = "binary" } }
+trace_exporter = { otlp-http = { endpoint = "http://localhost:4318/v1/traces", protocol = "binary" } }
+metrics_exporter = { otlp-http = { endpoint = "http://localhost:4318/v1/metrics", protocol = "binary" } }
 ```
 
 Restart Codex after saving the file so the Codex app server or CLI process reloads the global configuration.
