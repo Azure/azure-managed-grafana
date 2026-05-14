@@ -1,6 +1,6 @@
 # Monitoring AI Coding Agents with Grafana
 
-AI coding agents — GitHub Copilot, Claude Code, OpenClaw, and others — are quickly becoming part of how engineering teams ship software. Adoption is the easy part. The harder questions follow soon after:
+AI coding agents — GitHub Copilot, Claude Code, Codex, OpenClaw, and others — are quickly becoming part of how engineering teams ship software. Adoption is the easy part. The harder questions follow soon after:
 
 - **How much are we spending?** Which models, which teams, which tasks drive the cost?
 - **Who is actually using which agent, and for what?** Are tools being invoked the way we expect?
@@ -41,7 +41,7 @@ The same dashboards serve different audiences:
 └───────────────┘                 └──────────────────┘                     └──────────────────┘              └──────────┘
 ```
 
-- Each **AI coding agent** (GitHub Copilot / Claude Code / OpenClaw) emits OpenTelemetry traces, metrics, and logs to a configured OTLP endpoint.
+- Each **AI coding agent** (GitHub Copilot / Claude Code / Codex / OpenClaw) emits OpenTelemetry traces, metrics, and logs to a configured OTLP endpoint.
 - An **OpenTelemetry Collector** terminates OTLP at that endpoint and forwards the data to Application Insights using the Azure Monitor Exporter.
 - **Grafana** queries Application Insights via the Azure Monitor data source (Log Analytics / KQL) to render the dashboards.
 
@@ -166,6 +166,39 @@ Tip: `OTEL_LOG_USER_PROMPTS` and `OTEL_LOG_TOOL_DETAILS` enrich the dashboard's 
 
 The Claude Code dashboard breaks down daily cost and token usage by model, shows API errors, and ranks the most-invoked tools — useful for managing spend and catching tool-call regressions.
 
+### Codex
+
+Codex emits OpenTelemetry signals when configured through the global Codex `config.toml`. Codex Desktop/App Server currently relies on the user-level config for global onboarding, so configure `~/.codex/config.toml` rather than a project-scoped `.codex/config.toml`. On Windows, the default path is `C:\Users\<user>\.codex\config.toml`.
+
+Add to the global Codex `config.toml`:
+
+```toml
+[otel]
+environment = "devbox"
+log_user_prompt = true
+
+exporter = { otlp-http = {
+  endpoint = "http://localhost:4318/v1/logs",
+  protocol = "binary"
+}}
+
+trace_exporter = { otlp-http = {
+  endpoint = "http://localhost:4318/v1/traces",
+  protocol = "binary"
+}}
+
+metrics_exporter = { otlp-http = {
+  endpoint = "http://localhost:4318/v1/metrics",
+  protocol = "binary"
+}}
+```
+
+Restart Codex after saving the file so the Codex app server or CLI process reloads the global configuration.
+
+Tip: `log_user_prompt = true` emits the most complete data, including raw user prompts. Set it to `false` if prompts may contain sensitive content or if your organization does not permit prompt capture.
+
+Codex telemetry includes agent activity such as model/API calls, tool invocations, prompt-related events when enabled, token usage, latency, errors, and session context. This is useful for auditing agent behavior, understanding tool usage, and tracking cost and reliability across Codex sessions.
+
 ### OpenClaw
 
 ![OpenClaw dashboard](./attachments/openclaw-main.png)
@@ -216,6 +249,17 @@ customMetrics
 ```
 
 ```kusto
+// Codex
+union isfuzzy=true traces, customEvents, dependencies, customMetrics
+| where timestamp > ago(1h)
+| where cloud_RoleName contains "codex"
+   or tostring(customDimensions["service.name"]) contains "codex"
+   or name contains "codex"
+   or message contains "codex"
+| take 50
+```
+
+```kusto
 // OpenClaw
 dependencies
 | where timestamp > ago(1h)
@@ -252,4 +296,6 @@ All three require **Grafana 11.6+** with an **Azure Monitor data source** that h
 - [Application Insights connection strings](https://learn.microsoft.com/en-us/azure/azure-monitor/app/sdk-connection-string)
 - [Monitoring GitHub Copilot agents](https://code.visualstudio.com/docs/copilot/guides/monitoring-agents)
 - [Monitoring Claude Code usage](https://code.claude.com/docs/en/monitoring-usage)
+- [Codex configuration reference](https://developers.openai.com/codex/config-reference)
+- [Codex sample configuration](https://developers.openai.com/codex/config-sample)
 - [OpenClaw — Export to OpenTelemetry](https://docs.openclaw.ai/logging#export-to-opentelemetry)
