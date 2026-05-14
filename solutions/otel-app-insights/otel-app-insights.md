@@ -51,7 +51,7 @@ The OTLP collector and Application Insights pipeline are infrastructure — a on
 
 - An Application Insights resource. If you don't have one yet, [create one and attach it to a Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/app/create-workspace-resource).
 - [Docker installed.](https://docs.docker.com/engine/install/)
-- An Grafana instance with an Azure Monitor data source that can read your Application Insights resource. [Grafana 11.6+ is required](https://learn.microsoft.com/en-us/azure/managed-grafana/) for these dashboards.
+- A Grafana instance with an Azure Monitor data source that can read your Application Insights resource. [Grafana 11.6+ is required](https://learn.microsoft.com/en-us/azure/managed-grafana/) for these dashboards.
 
 ## Step 1. Run the OpenTelemetry Collector
 

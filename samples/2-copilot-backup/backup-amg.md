@@ -15,19 +15,20 @@ This SOP provides step-by-step instructions for backing up Azure Managed Grafana
 
 ### Step 1: Prepare Backup Environment
 1. Verify that the `amgmcp_system_backup` MCP tool is properly installed
-2. Move the existing backup directories to a temporary folder for comparison purposes:
+2. Move the existing backup directory to a temporary folder for comparison purposes:
    ```bash
    # Create temp directory with timestamp
    TEMP_BACKUP_DIR="$repo_root/amg-backup-temp-$(date +%Y%m%d-%H%M%S)"
    
    # Move existing backup if it exists
-   if [ -d "$repo_root/amg-backup" ]; then
-     mv "$repo_root/amg-backup" "$TEMP_BACKUP_DIR"
+   if [ -d "$repo_root/samples/2-copilot-backup/github-demo-2508-wus2" ]; then
+     mkdir -p "$TEMP_BACKUP_DIR"
+     mv "$repo_root/samples/2-copilot-backup/github-demo-2508-wus2" "$TEMP_BACKUP_DIR/"
    fi
    ```
 3. Create the backup directory structure:
    ```bash
-   mkdir -p $repo_root/amg-backup/github-demo-2508-wus2
+   mkdir -p "$repo_root/samples/2-copilot-backup/github-demo-2508-wus2"
    ```
 
 ### Step 2: Export Grafana Content
@@ -52,7 +53,7 @@ Use the `amgmcp_system_backup` tool with the following parameters:
 4. Notify relevant team members of backup completion
 
 ### Step 5: Capture new dashboard screenshots
-If there are changed dashboards, capture screenshots of the updated dashboards for documentation purposes. This can be done using the `blue_bridge_grafana_render_image` MCP tool. Use width of 1920 and height of 1080 for the screenshots.
+If there are changed dashboards, capture screenshots of the updated dashboards for documentation purposes. This can be done using the `amgmcp_image_render` MCP tool. Use width of 1920 and height of 1080 for the screenshots.
 
 **Screenshot Process:**
 1. **Compare dashboards**: Use the temporary backup directory to identify changed dashboards by comparing JSON files with the new backup
