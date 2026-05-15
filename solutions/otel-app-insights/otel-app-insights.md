@@ -35,10 +35,10 @@ The same dashboards serve different audiences:
 ## How it works
 
 ```
-┌───────────────┐    OTLP/HTTP    ┌──────────────────┐    Azure Monitor    ┌──────────────────┐              ┌──────────┐
-│  AI coding    │ ──────────────> │  OTel Collector  │ ────── Exporter ──> │    Application   │ <─── KQL ─── │ Grafana  │
-│    agent      │                 │                  │                     │     Insights     │              │ dashboard│
-└───────────────┘                 └──────────────────┘                     └──────────────────┘              └──────────┘
+┌───────────────┐    OTLP/HTTP    ┌──────────────────┐    Azure Monitor Exporter    ┌──────────────────┐              ┌──────────┐
+│  AI coding    │ ──────────────> │  OTel Collector  │ ───────────────────────────> │    Application   │ <─── KQL ─── │ Grafana  │
+│    agent      │                 │                  │                              │     Insights     │              │ dashboard│
+└───────────────┘                 └──────────────────┘                              └──────────────────┘              └──────────┘
 ```
 
 - Each **AI coding agent** (GitHub Copilot / Claude Code / Codex / OpenClaw) emits OpenTelemetry traces, metrics, and logs to a configured OTLP endpoint.
