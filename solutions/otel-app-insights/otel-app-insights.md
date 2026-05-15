@@ -1,6 +1,6 @@
 # Monitoring AI Coding Agents with Grafana
 
-AI coding agents — GitHub Copilot, Claude Code, Codex, OpenClaw, and others — are quickly becoming part of how engineering teams ship software. Adoption is the easy part. The harder questions follow soon after:
+AI coding agents — GitHub Copilot, Claude Code, Codex, Gemini CLI, OpenClaw, and others — are quickly becoming part of how engineering teams ship software. Adoption is the easy part. The harder questions follow soon after:
 
 - **How much are we spending?** Which models, which teams, which tasks drive the cost?
 - **Who is actually using which agent, and for what?** Are tools being invoked the way we expect?
@@ -20,6 +20,7 @@ Three purpose-built Grafana dashboards visualize the signals that matter for AI 
 | [GitHub Copilot](https://aka.ms/amg/dash/gh-copilot) | Operations, input/output tokens, chat sessions, tool calls, response time and TTFT by model | `aka.ms/amg/dash/gh-copilot` |
 | [Claude Code](https://aka.ms/amg/dash/claude-code) | Cost, sessions, user prompts, API requests/errors, daily cost and token trends, per-model breakdown, tool usage analytics | `aka.ms/amg/dash/claude-code` |
 | [OpenClaw](https://aka.ms/amg/dash/openclaw) | Messages, unique chats, response time, LLM calls, token usage, cache reads, stuck sessions, model usage breakdown | `aka.ms/amg/dash/openclaw` |
+| [Gemini CLI](https://aka.ms/amg/dash/gemini) | Traces, prompts, tool calls, and session context | `aka.ms/amg/dash/gemini` |
 
 ![Claude Code dashboard](./attachments/claude-code-main.png)
 
@@ -41,7 +42,7 @@ The same dashboards serve different audiences:
 └───────────────┘                 └──────────────────┘                              └──────────────────┘              └──────────┘
 ```
 
-- Each **AI coding agent** (GitHub Copilot / Claude Code / Codex / OpenClaw) emits OpenTelemetry traces, metrics, and logs to a configured OTLP endpoint.
+- Each **AI coding agent** (GitHub Copilot / Claude Code / Codex / Gemini CLI / OpenClaw) emits OpenTelemetry traces, metrics, and logs to a configured OTLP endpoint.
 - An **OpenTelemetry Collector** terminates OTLP at that endpoint and forwards the data to Application Insights using the Azure Monitor Exporter.
 - **Grafana** queries Application Insights via the Azure Monitor data source (Log Analytics / KQL) to render the dashboards.
 
@@ -190,10 +191,19 @@ Codex telemetry includes agent activity such as model/API calls, tool invocation
 
 ### Gemini CLI
 
-Gemini CLI reads telemetry configuration from settings or environment variables. You can configure it per-project, globally for your user, or via environment variables.
+Gemini CLI reads telemetry configuration from settings or environment variables.
 
-#### Option 1: Project or Global Settings
-Add the following to your project-level `.gemini/settings.json` or your global user-level settings file (located at `~/.gemini/settings.json` on Unix or `%USERPROFILE%\.gemini\settings.json` on Windows):
+#### Option 1: Settings File (Global or Project)
+You can enable telemetry globally for all projects or per-project.
+
+**Global User Settings:**
+- **Windows:** `%USERPROFILE%\.gemini\settings.json`
+- **macOS/Linux:** `~/.gemini/settings.json`
+
+**Project Settings:**
+- `.gemini/settings.json` in your project root.
+
+Add the following configuration:
 
 ```json
 {
@@ -308,6 +318,7 @@ Each dashboard has its own import and variables reference:
 - [GitHub Copilot](https://aka.ms/amg/dash/gh-copilot)
 - [Claude Code](https://aka.ms/amg/dash/claude-code)
 - [OpenClaw](https://aka.ms/amg/dash/openclaw)
+- [Gemini CLI](https://aka.ms/amg/dash/gemini)
 
 All three require **Grafana 11.6+** with an **Azure Monitor data source** that has access to the subscription containing your Application Insights resource.
 
