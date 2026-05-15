@@ -188,6 +188,41 @@ Tip: `log_user_prompt = true` emits the most complete data, including raw user p
 
 Codex telemetry includes agent activity such as model/API calls, tool invocations, prompt-related events when enabled, token usage, latency, errors, and session context. This is useful for auditing agent behavior, understanding tool usage, and tracking cost and reliability across Codex sessions.
 
+### Gemini CLI
+
+Gemini CLI reads telemetry configuration from settings or environment variables. You can configure it per-project, globally for your user, or via environment variables.
+
+#### Option 1: Project or Global Settings
+Add the following to your project-level `.gemini/settings.json` or your global user-level settings file (located at `~/.gemini/settings.json` on Unix or `%USERPROFILE%\.gemini\settings.json` on Windows):
+
+```json
+{
+  "telemetry": {
+    "enabled": true,
+    "target": "local",
+    "useCollector": true,
+    "otlpEndpoint": "http://localhost:4318",
+    "otlpProtocol": "http",
+    "traces": true
+  }
+}
+```
+
+#### Option 2: Environment Variables
+Environment variables override settings in the JSON files and are useful for transient or machine-specific setups:
+
+```bash
+# Enable telemetry and route to local collector
+export GEMINI_TELEMETRY_ENABLED=true
+export GEMINI_TELEMETRY_TARGET=local
+export GEMINI_TELEMETRY_USE_COLLECTOR=true
+export GEMINI_TELEMETRY_OTLP_ENDPOINT=http://localhost:4318
+export GEMINI_TELEMETRY_OTLP_PROTOCOL=http
+export GEMINI_TELEMETRY_TRACES_ENABLED=true
+```
+
+Tip: `traces: true` (or `GEMINI_TELEMETRY_TRACES_ENABLED=true`) enables detailed trace attributes, including prompts and tool outputs, which are useful for auditing and debugging.
+
 ### OpenClaw
 
 ![OpenClaw dashboard](./attachments/openclaw-main.png)
@@ -245,6 +280,14 @@ union isfuzzy=true traces, customEvents, dependencies, customMetrics
    or tostring(customDimensions["service.name"]) contains "codex"
    or name contains "codex"
    or message contains "codex"
+| take 50
+```
+
+```kusto
+// Gemini CLI
+traces
+| where timestamp > ago(1h)
+| where customDimensions["service.name"] == "gemini-cli"
 | take 50
 ```
 
