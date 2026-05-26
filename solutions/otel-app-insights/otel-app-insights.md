@@ -1,6 +1,6 @@
 # Monitoring AI Coding Agents with Grafana
 
-AI coding agents — GitHub Copilot, Claude Code, Codex, Gemini CLI, OpenClaw, and others — are quickly becoming part of how engineering teams ship software. Adoption is the easy part. The harder questions follow soon after:
+AI coding agents — GitHub Copilot, Claude Code, Codex, OpenClaw, OpenCode, Gemini CLI, and others — are quickly becoming part of how engineering teams ship software. Adoption is the easy part. The harder questions follow soon after:
 
 - **How much are we spending?** Which models, which teams, which tasks drive the cost?
 - **Who is actually using which agent, and for what?** Are tools being invoked the way we expect?
@@ -19,7 +19,9 @@ Three purpose-built Grafana dashboards visualize the signals that matter for AI 
 | --- | --- | --- |
 | [GitHub Copilot](https://aka.ms/amg/dash/gh-copilot) | Operations, input/output tokens, chat sessions, tool calls, response time and TTFT by model | `aka.ms/amg/dash/gh-copilot` |
 | [Claude Code](https://aka.ms/amg/dash/claude-code) | Cost, sessions, user prompts, API requests/errors, daily cost and token trends, per-model breakdown, tool usage analytics | `aka.ms/amg/dash/claude-code` |
+| [Codex](https://aka.ms/amg/dash/codex) | Sessions, turns, token usage by type and model, turn/TTFT latency percentiles, tool reliability and latency, sandbox/approval activity, sessions by client | `aka.ms/amg/dash/codex` |
 | [OpenClaw](https://aka.ms/amg/dash/openclaw) | Messages, unique chats, response time, LLM calls, token usage, cache reads, stuck sessions, model usage breakdown | `aka.ms/amg/dash/openclaw` |
+| [OpenCode](https://aka.ms/amg/dash/opencode) | Sessions, prompts, LLM calls, token usage, tool executions, p95 prompt latency, cache hit ratio, per-model/provider breakdown | `aka.ms/amg/dash/opencode` |
 | [Gemini CLI](https://aka.ms/amg/dash/gemini) | Traces, prompts, tool calls, and session context | `aka.ms/amg/dash/gemini` |
 
 ![Claude Code dashboard](./attachments/claude-code-main.png)
@@ -42,7 +44,7 @@ The same dashboards serve different audiences:
 └───────────────┘                 └──────────────────┘                              └──────────────────┘              └──────────┘
 ```
 
-- Each **AI coding agent** (GitHub Copilot / Claude Code / Codex / Gemini CLI / OpenClaw) emits OpenTelemetry traces, metrics, and logs to a configured OTLP endpoint.
+- Each **AI coding agent** (GitHub Copilot / Claude Code / Codex / OpenClaw / OpenCode / Gemini CLI) emits OpenTelemetry traces, metrics, and logs to a configured OTLP endpoint.
 - An **OpenTelemetry Collector** terminates OTLP at that endpoint and forwards the data to Application Insights using the Azure Monitor Exporter.
 - **Grafana** queries Application Insights via the Azure Monitor data source (Log Analytics / KQL) to render the dashboards.
 
@@ -170,6 +172,8 @@ The Claude Code dashboard breaks down daily cost and token usage by model, shows
 
 ### Codex
 
+![Codex dashboard](./attachments/codex-main.png)
+
 Codex emits OpenTelemetry signals when configured through the global Codex `config.toml`. Codex Desktop/App Server currently relies on the user-level config for global onboarding, so configure `~/.codex/config.toml` rather than a project-scoped `.codex/config.toml`. On Windows, the default path is `C:\Users\<user>\.codex\config.toml`.
 
 Add to the global Codex `config.toml`:
@@ -178,9 +182,21 @@ Add to the global Codex `config.toml`:
 [otel]
 environment = "devbox"
 log_user_prompt = true
-exporter = { otlp-http = { endpoint = "http://localhost:4318/v1/logs", protocol = "binary" } }
-trace_exporter = { otlp-http = { endpoint = "http://localhost:4318/v1/traces", protocol = "binary" } }
-metrics_exporter = { otlp-http = { endpoint = "http://localhost:4318/v1/metrics", protocol = "binary" } }
+exporter = "otlp-http"
+trace_exporter = "otlp-http"
+metrics_exporter = "otlp-http"
+
+[otel.exporter."otlp-http"]
+endpoint = "http://localhost:4318/v1/logs"
+protocol = "binary"
+
+[otel.trace_exporter."otlp-http"]
+endpoint = "http://localhost:4318/v1/traces"
+protocol = "binary"
+
+[otel.metrics_exporter."otlp-http"]
+endpoint = "http://localhost:4318/v1/metrics"
+protocol = "binary"
 ```
 
 Restart Codex after saving the file so the Codex app server or CLI process reloads the global configuration.
@@ -188,6 +204,65 @@ Restart Codex after saving the file so the Codex app server or CLI process reloa
 Tip: `log_user_prompt = true` emits the most complete data, including raw user prompts. Set it to `false` if prompts may contain sensitive content or if your organization does not permit prompt capture.
 
 Codex telemetry includes agent activity such as model/API calls, tool invocations, prompt-related events when enabled, token usage, latency, errors, and session context. This is useful for auditing agent behavior, understanding tool usage, and tracking cost and reliability across Codex sessions.
+
+### OpenClaw
+
+![OpenClaw dashboard](./attachments/openclaw-main.png)
+
+OpenClaw gateway publishes OpenTelemetry signals via its diagnostics config. See the [official docs](https://docs.openclaw.ai/gateway/opentelemetry).
+
+Add to the gateway's telemetry config (nested under `diagnostics.otel`):
+
+```json
+{
+  "diagnostics": {
+    "enabled": true,
+    "otel": {
+      "enabled": true,
+      "endpoint": "http://localhost:4318",
+      "protocol": "http/protobuf",
+      "serviceName": "openclaw-gateway",
+      "traces": true,
+      "metrics": true,
+      "logs": true,
+      "sampleRate": 1,
+      "flushIntervalMs": 5000
+    }
+  }
+}
+```
+
+Notes: `protocol` currently only honors `http/protobuf` (gRPC is ignored). `serviceName` must be `openclaw-gateway`. The OpenClaw dashboard filters by `cloud_RoleName == "openclaw-gateway"`, which is derived from this field.
+
+The OpenClaw dashboard tracks messages by channel, response-time percentiles, cache-read tokens, and stuck sessions — useful for chat-style deployments where session health and cache efficiency drive both cost and user experience.
+
+### OpenCode
+
+![OpenCode dashboard](./attachments/opencode-main.png)
+
+[OpenCode](https://opencode.ai) emits OpenTelemetry signals through the [`@devtheops/opencode-plugin-otel`](https://github.com/DEVtheOPS/opencode-plugin-otel) plugin.
+
+Add the plugin to `~/.config/opencode/opencode.json`:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@devtheops/opencode-plugin-otel"]
+}
+```
+
+Then export these environment variables before starting OpenCode:
+
+```bash
+export OPENCODE_ENABLE_TELEMETRY=1
+export OPENCODE_OTLP_ENDPOINT=http://localhost:4318
+export OPENCODE_OTLP_PROTOCOL=http/protobuf
+export OPENCODE_RESOURCE_ATTRIBUTES="service.name=opencode"
+```
+
+Important: `service.name` must be `opencode`. The OpenCode dashboard filters by `cloud_RoleName == "opencode"`, which is derived from this attribute.
+
+The OpenCode dashboard surfaces sessions, prompts, LLM calls, token usage (input/output/cache), tool executions and failures, p95 prompt latency, cache hit ratio, and per-model/provider breakdowns — useful for cost control, debugging stuck tools, and reviewing prompt and tool behavior across sessions.
 
 ### Gemini CLI
 
@@ -213,7 +288,7 @@ Add the following configuration:
     "useCollector": true,
     "otlpEndpoint": "http://localhost:4318",
     "otlpProtocol": "http",
-    "traces": true
+    "logPrompts": true
   }
 }
 ```
@@ -228,36 +303,10 @@ export GEMINI_TELEMETRY_TARGET=local
 export GEMINI_TELEMETRY_USE_COLLECTOR=true
 export GEMINI_TELEMETRY_OTLP_ENDPOINT=http://localhost:4318
 export GEMINI_TELEMETRY_OTLP_PROTOCOL=http
-export GEMINI_TELEMETRY_TRACES_ENABLED=true
+export GEMINI_TELEMETRY_LOG_PROMPTS=true
 ```
 
-Tip: `traces: true` (or `GEMINI_TELEMETRY_TRACES_ENABLED=true`) enables detailed trace attributes, including prompts and tool outputs, which are useful for auditing and debugging.
-
-### OpenClaw
-
-![OpenClaw dashboard](./attachments/openclaw-main.png)
-
-OpenClaw gateway publishes OpenTelemetry signals via its logging/telemetry config. See the [official docs](https://docs.openclaw.ai/logging#export-to-opentelemetry).
-
-Add to the gateway's telemetry config:
-
-```json
-{
-  "enabled": true,
-  "endpoint": "http://localhost:4318",
-  "protocol": "http/protobuf",
-  "serviceName": "openclaw-gateway",
-  "traces": true,
-  "metrics": true,
-  "logs": true,
-  "sampleRate": 1,
-  "flushIntervalMs": 5000
-}
-```
-
-Important: `serviceName` must be `openclaw-gateway`. The OpenClaw dashboard filters by `cloud_RoleName == "openclaw-gateway"`, which is derived from this field.
-
-The OpenClaw dashboard tracks messages by channel, response-time percentiles, cache-read tokens, and stuck sessions — useful for chat-style deployments where session health and cache efficiency drive both cost and user experience.
+Tip: `logPrompts: true` (or `GEMINI_TELEMETRY_LOG_PROMPTS=true`) captures user prompt text in the telemetry events, which is useful for auditing and debugging. Set it to `false` if prompts may contain sensitive content.
 
 ## Step 3. Verify data is reaching Application Insights
 
@@ -294,18 +343,26 @@ union isfuzzy=true traces, customEvents, dependencies, customMetrics
 ```
 
 ```kusto
-// Gemini CLI
-traces
-| where timestamp > ago(1h)
-| where customDimensions["service.name"] == "gemini-cli"
-| take 50
-```
-
-```kusto
 // OpenClaw
 dependencies
 | where timestamp > ago(1h)
 | where cloud_RoleName == "openclaw-gateway"
+| take 50
+```
+
+```kusto
+// OpenCode
+union isfuzzy=true traces, dependencies, exceptions
+| where timestamp > ago(1h)
+| where cloud_RoleName == "opencode"
+| take 50
+```
+
+```kusto
+// Gemini CLI
+traces
+| where timestamp > ago(1h)
+| where customDimensions["service.name"] == "gemini-cli"
 | take 50
 ```
 
@@ -317,10 +374,12 @@ Each dashboard has its own import and variables reference:
 
 - [GitHub Copilot](https://aka.ms/amg/dash/gh-copilot)
 - [Claude Code](https://aka.ms/amg/dash/claude-code)
+- [Codex](https://aka.ms/amg/dash/codex)
 - [OpenClaw](https://aka.ms/amg/dash/openclaw)
+- [OpenCode](https://aka.ms/amg/dash/opencode)
 - [Gemini CLI](https://aka.ms/amg/dash/gemini)
 
-All three require **Grafana 11.6+** with an **Azure Monitor data source** that has access to the subscription containing your Application Insights resource.
+All dashboards require **Grafana 11.6+** with an **Azure Monitor data source** that has access to the subscription containing your Application Insights resource.
 
 > **Tip — same dashboards in the Azure Portal.** These dashboards are also available natively in the Azure Portal as Azure Monitor dashboards with Grafana (Helios), with no separate Grafana instance required. See [Use Azure Monitor dashboards with Grafana](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/visualize-use-grafana-dashboards).
 
@@ -341,4 +400,6 @@ All three require **Grafana 11.6+** with an **Azure Monitor data source** that h
 - [Monitoring Claude Code usage](https://code.claude.com/docs/en/monitoring-usage)
 - [Codex configuration reference](https://developers.openai.com/codex/config-reference)
 - [Codex sample configuration](https://developers.openai.com/codex/config-sample)
-- [OpenClaw — Export to OpenTelemetry](https://docs.openclaw.ai/logging#export-to-opentelemetry)
+- [OpenClaw — OpenTelemetry export](https://docs.openclaw.ai/gateway/opentelemetry)
+- [OpenCode OpenTelemetry plugin (`@devtheops/opencode-plugin-otel`)](https://github.com/DEVtheOPS/opencode-plugin-otel)
+- [Gemini CLI — Observability with OpenTelemetry](https://google-gemini.github.io/gemini-cli/docs/cli/telemetry.html)
