@@ -147,3 +147,34 @@ Try these prompts with your Foundry agent to explore AMG-MCP capabilities:
 - *"What is the CPU utilization of my VM 'web-server-01' over the last hour?"*
 - *"Show me the memory usage trend for my Azure SQL database"*
 - *"Get the request count for my App Service in the past 24 hours"*
+
+---
+
+## Available MCP Tools
+
+The Azure Managed Grafana MCP server exposes tools for common Grafana and Azure Monitor workflows, including:
+
+- Dashboard search, inspection, and updates
+- Azure Resource Graph queries
+- Azure resource metrics and metric definitions
+- Azure resource logs and Application Insights traces
+- Azure subscriptions available through the Grafana Azure Monitor data source
+- Grafana data source discovery
+
+For the complete current tool list, see [amg-mcp.md](../../amg-mcp.md).
+
+---
+
+## Troubleshooting
+
+- If the agent cannot connect to the MCP endpoint, confirm the workspace hostname uses only the Grafana host name, not the full `https://.../api/azure-mcp` URL.
+- If authentication fails, verify that the Foundry project managed identity has a Grafana role assignment on the Azure Managed Grafana instance.
+- If resource queries return no data, verify that the Grafana Azure Monitor data source has access to the subscriptions and resources you want to query.
+- If the tool is missing in Foundry, confirm that **Azure Managed Grafana** was selected from the tool catalog and that the MCP connection was saved successfully.
+
+---
+
+## Links
+
+- [AMG-MCP documentation](../../amg-mcp.md)
+- [Azure Managed Grafana issues and feedback](https://aka.ms/managed-grafana/issues)

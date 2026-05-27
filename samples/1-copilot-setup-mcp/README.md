@@ -1,15 +1,16 @@
-# Setup AMG-MCP in GitHub Copilot
-### Step 1: Setup Entra Id app
-From Azure portal, we need to create an Entra Id application that the Copilot coding agent will use to access Azure stuffs.
-Add a "Federated credential" to the Entra Id app to allow access from the GitHub repo.
+# Set up AMG-MCP in GitHub Copilot
+
+### Step 1: Set up a Microsoft Entra ID app
+From the Azure portal, create a Microsoft Entra ID application that the Copilot coding agent will use to access Azure resources.
+Add a federated credential to the Microsoft Entra ID app to allow access from the GitHub repo.
 ![alt text](workload-identity-gh-setup.png "Add GitHub federated credential")
 
 ### Step 2: copilot-setup-steps.yml
-Add a new file with path [.github/workflows/copilot-setup-steps.yml](.github/workflows/copilot-setup-steps.yml). There are two things to call out:
+Add a new file with path [.github/workflows/copilot-setup-steps.yml](../../.github/workflows/copilot-setup-steps.yml). There are two things to call out:
 1. The MCP server binary is downloaded.
-2. azure cli login is needed for MCP server to have access
+2. Azure CLI login is needed for the MCP server to have access.
 
-### Step 3: configure GitHub Copilot agent to use the MCP
+### Step 3: Configure GitHub Copilot agent to use the MCP
 Add AMG-MCP in MCP configuration. `Settings` -> `Copilot` -> `Coding agent` -> `MCP configuration`
 The content can be found in [github-mcp.json](./github-mcp.json).
 
