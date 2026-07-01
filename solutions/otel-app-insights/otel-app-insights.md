@@ -147,7 +147,7 @@ The Copilot dashboard surfaces total operations, input/output tokens, chat sessi
 
 ![Claude Code dashboard](./attachments/claude-code-main.png)
 
-Claude Code reads telemetry configuration from environment variables. See the [official docs](https://code.claude.com/docs/en/monitoring-usage).
+Claude Code reads telemetry configuration from environment variables. See the [official docs](https://code.claude.com/docs/en/monitoring-usage), including the [traces beta configuration](https://code.claude.com/docs/en/monitoring-usage#traces-beta).
 
 Add to the Claude Code `settings.json`:
 
@@ -155,8 +155,10 @@ Add to the Claude Code `settings.json`:
 {
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "CLAUDE_CODE_ENHANCED_TELEMETRY_BETA": "1",
     "OTEL_METRICS_EXPORTER": "otlp",
     "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_TRACES_EXPORTER": "otlp",
     "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
     "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4318",
     "OTEL_LOG_USER_PROMPTS": "1",
@@ -165,6 +167,8 @@ Add to the Claude Code `settings.json`:
   }
 }
 ```
+
+Tracing is currently beta and disabled by default in Claude Code. `CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1` turns on span creation, and `OTEL_TRACES_EXPORTER=otlp` sends those spans to the collector. With `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf` and the shared `OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318`, Claude Code uses the collector's OTLP/HTTP traces endpoint.
 
 Tip: `OTEL_LOG_USER_PROMPTS` and `OTEL_LOG_TOOL_DETAILS` enrich the dashboard's per-user and tool-usage panels. Omit them if you prefer not to capture prompt text — for example, in regulated environments where prompts may contain sensitive content.
 
@@ -325,9 +329,12 @@ dependencies
 
 ```kusto
 // Claude Code
-customMetrics
+union isfuzzy=true customMetrics, customEvents, traces, dependencies, requests
 | where timestamp > ago(1h)
 | where name startswith "claude_code"
+   or message contains "claude_code"
+   or cloud_RoleName == "claude-code"
+   or tostring(customDimensions["service.name"]) == "claude-code"
 | take 50
 ```
 
