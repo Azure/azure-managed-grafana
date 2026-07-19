@@ -41,8 +41,7 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 | `amgmcp_alert_list` | Lists Grafana-managed alert rules together with their live evaluation state and firing instances. |
 | `amgmcp_alert_update` | Creates, replaces, or patches a Grafana-managed alert rule. Supports full rule definitions, targeted patch operations, and validation-only mode. |
 | `amgmcp_loki_list_labels` | Lists label names or values from a Loki data source to help build stream selectors. |
-| `amgmcp_loki_query` | Queries logs or metric data from a Loki data source using LogQL. |
-| `amgmcp_query_datasource` | Sends a raw query payload to Grafana's data source query endpoint. |
+| `amgmcp_loki_query` | Queries logs data from a Loki data source using LogQL. |
 | `amgmcp_sql_get_metadata` | Gets metadata for connected Microsoft SQL Server, PostgreSQL, and MySQL data sources, including databases, tables, and column schemas. |
 | `amgmcp_sql_query` | Queries a Microsoft SQL Server, PostgreSQL, or MySQL data source using the data source's SQL dialect. |
 
