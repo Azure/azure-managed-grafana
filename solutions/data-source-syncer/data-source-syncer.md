@@ -1,6 +1,6 @@
 # Data Source Syncer: Managed Credential Rotation for Azure Managed Grafana
 
-Some of the most useful Azure data sources don't authenticate with a long-lived API key — they authenticate with a short-lived **Microsoft Entra ID access token**. Azure Database for PostgreSQL flexible server, Azure Monitor managed Prometheus, and Azure Databricks can all work this way, and an Entra ID token is only valid for about an hour. Paste one into a Grafana data source by hand and your dashboards work great — until the token expires and every panel starts returning auth errors.
+Some of the most useful Azure data sources don't authenticate with a long-lived API key — they authenticate with a short-lived **Microsoft Entra ID access token**. Azure Database for PostgreSQL flexible server, Azure Database for MySQL flexible server, Azure Monitor managed Prometheus, and Azure Databricks can all work this way, and an Entra ID token is only valid for about an hour. Paste one into a Grafana data source by hand and your dashboards work great — until the token expires and every panel starts returning auth errors.
 
 The **data source syncer** handles this for you. It is a managed capability built into Azure Managed Grafana: the service itself acquires a fresh Entra ID token using your Grafana instance's **managed identity** and writes it into the data source configuration for you — on a schedule, with no infrastructure to run and no secret to store. You opt a data source in, grant the managed identity access to the backing Azure resource, and the syncer keeps the credential current.
 
@@ -9,32 +9,35 @@ The **data source syncer** handles this for you. It is a managed capability buil
 ## How it works
 
 ```
-                      Azure Managed Grafana
-              ┌───────────────────────────────────┐
-              │  Data source syncer               │
-              │  (built into the service)         │
-              └─────────────────┬─────────────────┘
-                                │   on enable, then every hour:
-                                │   acquire a managed-identity token and
-                                │   write it to each suffix-matched data source
-        ┌───────────────────────┼───────────────────────┐
-        ▼                       ▼                       ▼
-┌───────────────────┐   ┌───────────────────┐   ┌───────────────────┐
-│ PostgreSQL        │   │ Prometheus        │   │ Databricks        │
-│ data source       │   │ data source       │   │ data source       │
-│ User + password   │   │ Authorization hdr │   │ PAT / Token field │
-└─────────┬─────────┘   └─────────┬─────────┘   └─────────┬─────────┘
-          ▼                       ▼                       ▼
-┌───────────────────┐   ┌───────────────────┐   ┌───────────────────┐
-│ Azure Database    │   │ Azure Monitor     │   │ Azure Databricks  │
-│ for PostgreSQL    │   │ workspace         │   │ SQL warehouse     │
-└───────────────────┘   └───────────────────┘   └───────────────────┘
+                             Azure Managed Grafana
+                     ┌───────────────────────────────────┐
+                     │  Data source syncer               │
+                     │  (built into the service)         │
+                     └─────────────────┬─────────────────┘
+                                       │   on enable, then every hour:
+                                       │   acquire a managed-identity token and
+                                       │   write it to each suffix-matched data source
+        ┌──────────────────┬───────────┴──────┬──────────────────┐
+        ▼                  ▼                  ▼                  ▼
+┌────────────────┐ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
+│ PostgreSQL     │ │ MySQL          │ │ Prometheus     │ │ Databricks     │
+│ data source    │ │ data source    │ │ data source    │ │ data source    │
+│ User+password  │ │ User+password  │ │ Authorization  │ │ PAT / Token    │
+│                │ │                │ │ header         │ │ field          │
+└───────┬────────┘ └───────┬────────┘ └───────┬────────┘ └───────┬────────┘
+        ▼                  ▼                  ▼                  ▼
+┌────────────────┐ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
+│ Azure Database │ │ Azure Database │ │ Azure Monitor  │ │ Azure          │
+│ for PostgreSQL │ │ for MySQL      │ │ workspace      │ │ Databricks     │
+│                │ │                │ │                │ │ SQL warehouse  │
+└────────────────┘ └────────────────┘ └────────────────┘ └────────────────┘
 ```
 
 1. You enable the syncer on the Grafana resource and give it a **data source name suffix**.
 2. For each data source whose **Name** ends with that suffix, the syncer acquires a fresh Entra ID token for the Grafana instance's managed identity, scoped to the matching backend service.
 3. It writes the token into that data source's configuration:
    - **PostgreSQL** — into the **Password** field, and it updates the **User** field to the Grafana managed identity's PostgreSQL role.
+   - **MySQL** — into the **Password** field, and it updates the **User** field to the Grafana managed identity's MySQL user. It also turns on the connection options MySQL token auth requires (see [Set up an Azure Database for MySQL data source](#set-up-an-azure-database-for-mysql-data-source)).
    - **Prometheus** — into the `Authorization` HTTP header (`Authorization: Bearer <token>`).
    - **Databricks** — into the **Personal Access Token (PAT)** / `Token` field.
 4. The first sync happens **immediately** when you enable the feature. After that, the syncer writes a refreshed token **every hour**, well before the previous one expires, so dashboards never lose connectivity.
@@ -50,11 +53,12 @@ For example, with the suffix `-sync`:
 | Data source Name       | Synced? |
 | ---------------------- | ------- |
 | `postgresql-sync`      | ✅ Yes  |
+| `mysql-sakila-sync`    | ✅ Yes  |
 | `prod-prometheus-sync` | ✅ Yes  |
 | `databricks-sql-sync`  | ✅ Yes  |
 | `team-prometheus`      | ❌ No   |
 
-This lets you keep hand-managed and syncer-managed data sources side by side on the same instance: only the ones you deliberately name with the suffix are rotated. The same suffix governs PostgreSQL, Prometheus, and Databricks data sources — the syncer inspects each matching data source's type and writes the appropriate token.
+This lets you keep hand-managed and syncer-managed data sources side by side on the same instance: only the ones you deliberately name with the suffix are rotated. The same suffix governs PostgreSQL, MySQL, Prometheus, and Databricks data sources — the syncer inspects each matching data source's type and writes the appropriate token.
 
 > **Naming caveat.** Matching is on the data source's display **Name**, which is free-text and editable. Renaming a synced data source so it no longer ends with the suffix silently removes it from rotation, and naming an unrelated data source with the suffix opts it in. Choose a distinctive suffix and apply it deliberately.
 
@@ -63,6 +67,7 @@ This lets you keep hand-managed and syncer-managed data sources side by side on 
 | Data source | Token audience (Entra ID resource the token is minted for) | Where the syncer writes the credential |
 | ----------- | ---------------------------------------------------------- | --------------------------------- |
 | Azure Database for PostgreSQL flexible server | `https://ossrdbms-aad.database.windows.net` / `oss-rdbms` | User field and Password field (the Password is the token) |
+| Azure Database for MySQL flexible server | `https://ossrdbms-aad.database.windows.net` / `oss-rdbms` (the same scope as PostgreSQL) | User field and Password field (the Password is the token), plus the connection options MySQL token auth requires |
 | Azure Monitor managed Prometheus | `https://prometheus.monitor.azure.com` (token scope — not the per-workspace query endpoint) | `Authorization` header (`Authorization: Bearer <token>`) |
 | Azure Databricks | `2ff814a6-3304-4ab8-85cb-cd0e6f879c1d` (the Azure Databricks application) | Personal Access Token (`Token`) field |
 
@@ -72,7 +77,7 @@ This lets you keep hand-managed and syncer-managed data sources side by side on 
 - Permission to update the Grafana resource — for example the **Contributor** or **Owner** role on the `Microsoft.Dashboard/grafana` resource — so you can PATCH its `properties.datasourceSyncer`.
 - The **Grafana Editor** role (or higher) on the instance, so you can create and configure data sources.
 - [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) installed and signed in (`az login`), if you enable the feature from the command line.
-- The backing Azure resource for whichever data source you're syncing (an Azure Database for PostgreSQL flexible server, an Azure Monitor workspace, and/or an Azure Databricks workspace), as described below.
+- The backing Azure resource for whichever data source you're syncing (an Azure Database for PostgreSQL flexible server, an Azure Database for MySQL flexible server, an Azure Monitor workspace, and/or an Azure Databricks workspace), as described below.
 
 ## Set up an Azure Database for PostgreSQL data source
 
