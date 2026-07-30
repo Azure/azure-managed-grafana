@@ -160,6 +160,118 @@ Select **Save & test**. The test can fail until the syncer writes the first real
 
 Turn on the data source syncer with the suffix you used, as described in [Enable and disable the syncer](#enable-and-disable-the-syncer) below. The syncer writes the first token immediately, and the data source starts returning data.
 
+## Set up an Azure Database for MySQL data source
+
+Use this when you query an [Azure Database for MySQL flexible server](https://learn.microsoft.com/azure/mysql/flexible-server/overview) from Grafana and want the syncer to keep the Microsoft Entra token fresh for the built-in MySQL data source (`mysql`). MySQL uses the same token-as-password model and the same `oss-rdbms` token audience as PostgreSQL, and the plugin is part of core Grafana — no Grafana Enterprise option needed. The server-side Entra setup, though, is materially different from PostgreSQL's, so read step 2 before you start.
+
+### 1. Create a MySQL flexible server and database
+
+Create an Azure Database for MySQL flexible server and the database you want Grafana to query. Microsoft Entra authentication on MySQL flexible server has two prerequisites that PostgreSQL doesn't have:
+
+- **A user-assigned managed identity on the server.** The server uses this identity to resolve Microsoft Entra principals through Microsoft Graph; a system-assigned identity can't be used for this. Create it and attach it to the server before you set the Entra administrator:
+
+  ```powershell
+  az identity create --resource-group <rg> --name <server-identity-name>
+
+  az mysql flexible-server identity assign `
+    --resource-group <rg> `
+    --server-name <server-name> `
+    --identity <server-identity-name>
+  ```
+
+- **Microsoft Graph read access for that identity.** Grant the user-assigned identity the `User.Read.All`, `GroupMember.Read.All`, and `Application.Read.All` Microsoft Graph application permissions, or assign it the **Directory Readers** role instead. Only a **Privileged Role Administrator** can grant these, so start this early — it's usually the longest lead-time step in the whole procedure. Without it, `CREATE AADUSER` in step 2 fails with `ERROR 9127 (HY000): User error occurred while accessing Azure AD endpoint`.
+
+Then enable Microsoft Entra authentication on the server's **Security > Authentication** page, choosing either **MySQL and Microsoft Entra authentication** or **Microsoft Entra authentication only**.
+
+Make sure Azure Managed Grafana can reach the server on port `3306` (the default). For public access this means adding the required firewall rules — they're IPv4-only, apply at the server level, and take up to five minutes to propagate; for private access, make sure the Grafana instance and the MySQL server are connected through your private networking design. Always connect by FQDN, because the server's IP address isn't guaranteed to stay static.
+
+Note these values for the Grafana data source:
+
+- **Host** — the MySQL server FQDN, for example `<server-name>.mysql.database.azure.com:3306`.
+- **Database** — the database to query.
+- **Managed identity MySQL user** — the MySQL user name mapped to the Grafana managed identity. The syncer writes this into the data source's **Username** field. It derives the name from the token's claims, which for a managed identity is the identity's own name — for a system-assigned Grafana identity that's usually the Grafana resource name, and for a user-assigned one the identity's name. The MySQL user you create in step 2 has to match it exactly, including case.
+
+### 2. Grant the Grafana managed identity database access
+
+> **MySQL allows one Microsoft Entra administrator, and it can't be a managed identity.** Azure Database for MySQL flexible server holds a single Entra administrator assignment at a time, and that administrator must be an Entra **user** or **group** — unlike PostgreSQL, a service principal or managed identity can't hold it. So MySQL has no "make the Grafana identity an admin" shortcut: the Grafana managed identity always has to be added as an Entra-backed database user by the existing administrator. Assigning a different administrator overwrites the previous one, and removing the administrator without assigning a new one disassociates the server from its Entra tenant and disables every Entra login on it.
+
+Set the Entra administrator to a user or group you control. Pass the server's user-assigned identity from step 1 in `--identity` — that parameter is the server's Graph reader, *not* the principal you're making an administrator, which is the most commonly misread part of this command:
+
+```powershell
+$adminUpn = az ad signed-in-user show --query userPrincipalName -o tsv
+$adminObjectId = az ad signed-in-user show --query id -o tsv
+
+az mysql flexible-server ad-admin create `
+  --resource-group <rg> `
+  --server-name <server-name> `
+  --display-name $adminUpn `
+  --object-id $adminObjectId `
+  --identity <server-identity-name>
+```
+
+Next, get the Grafana managed identity's **client ID** — MySQL binds the database user to the client ID, not to the principal (object) ID:
+
+```powershell
+$grafanaResourceId = "/subscriptions/<sub-id>/resourceGroups/<grafana-rg>/providers/Microsoft.Dashboard/grafana/<grafana-name>"
+$grafana = az rest --method get `
+  --url "https://management.azure.com$($grafanaResourceId)?api-version=2026-05-01-preview" `
+  | ConvertFrom-Json
+
+$miPrincipalId = $grafana.identity.principalId
+$miClientId = az ad sp show --id $miPrincipalId --query appId -o tsv
+```
+
+If the Grafana instance uses a user-assigned identity, use the `principalId` for that identity under `identity.userAssignedIdentities` instead of `identity.principalId`.
+
+Then connect to MySQL as the Microsoft Entra administrator. The Entra access token is the password, and MySQL only accepts it if the client sends it unhashed, so pass `--enable-cleartext-plugin`:
+
+```powershell
+$token = az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv
+
+mysql --host <server-name>.mysql.database.azure.com `
+  --user $adminUpn `
+  --enable-cleartext-plugin `
+  --password=$token
+```
+
+Create the Entra-backed MySQL user for the Grafana managed identity and grant it only what Grafana needs:
+
+```sql
+SET aad_auth_validate_oids_in_tenant = OFF;
+CREATE AADUSER '<grafana-managed-identity-name>' IDENTIFIED BY '<managed-identity-client-id>';
+
+GRANT SELECT ON `<database-name>`.* TO '<grafana-managed-identity-name>'@'%';
+FLUSH PRIVILEGES;
+```
+
+`CREATE AADUSER` grants no data privileges on its own — the `GRANT` is what lets Grafana read. Adjust the schema and grants to match the data Grafana should query, and verify with `SHOW GRANTS FOR '<grafana-managed-identity-name>'@'%';`.
+
+The MySQL Entra how-to only shows `CREATE AADUSER` for a human user. The `IDENTIFIED BY` form used above — the one that binds a database user to a managed identity's client ID, and the `SET aad_auth_validate_oids_in_tenant = OFF` it needs first — is documented in [Migrate an application to use passwordless connections with Azure Database for MySQL](https://learn.microsoft.com/azure/developer/java/spring-framework/migrate-mysql-to-passwordless-connection).
+
+> **MySQL user names are capped at 32 characters.** The limit is hardcoded in MySQL itself, so a longer name can't be used. If the Grafana managed identity's name exceeds 32 characters, create the database user under a shorter name bound to the same client ID, and enter that shorter name as the data source's **Username** yourself in step 3. The syncer notices that the name it derived from the token is too long for MySQL, leaves your value in place, and logs a warning — so your shorter name survives every refresh. (For a human Entra administrator with an over-length UPN, MySQL's documented equivalent is the alias form, `CREATE AADUSER '<upn>' as '<alias>';`.) PostgreSQL has no such cap, and the syncer always overwrites the **User** field there.
+
+### 3. Create the MySQL data source in Grafana
+
+In the Grafana portal, go to **Connections > Data sources > Add new data source** and choose **MySQL**, then:
+
+- **Name** — give it a name that **ends with your chosen suffix** (for example `azure-mysql-sync`).
+- **Host URL** — enter the MySQL server FQDN with port `3306`, for example `<server-name>.mysql.database.azure.com:3306`.
+- **Database name** — enter the database to query.
+- **Username** — enter any placeholder value. The syncer **replaces** it with the Grafana managed identity's MySQL user on its next run. If you had to create a shortened user name in step 2, enter that name here instead — the syncer keeps it.
+- **Password** — enter any placeholder value. The syncer **replaces** it with a real Entra ID token on its next run.
+
+You don't have to set the TLS switches or **Allow Cleartext Passwords** yourself. On every run the syncer writes the connection options that MySQL token authentication needs, in the same **Authentication** section of the settings page:
+
+- **Allow Cleartext Passwords** is always turned on. Entra authentication sends the access token as the password, and MySQL only accepts it if the client doesn't hash it first.
+- If none of **Use TLS Client Auth**, **With CA Cert**, or **Skip TLS Verification** is on, the syncer turns on **Skip TLS Verification** so the connection is still encrypted — Azure Database for MySQL flexible server rejects unencrypted connections, because `require_secure_transport` is `ON` by default.
+- If you'd rather have Grafana verify the server certificate, turn on **With CA Cert**, paste the Azure root CA certificates into **TLS/SSL Root Certificate**, and turn **Skip TLS Verification** *off* in the same edit. The syncer only ever adds a TLS option — it never clears one — so a **Skip TLS Verification** left over from an earlier run stays on, and Grafana skips verification even with the CA certificate in place. Once **With CA Cert** is on, the syncer treats TLS as configured and won't force skip-verify again. Trust the **root** CAs — **DigiCert Global Root G2** and **Microsoft RSA Root CA 2017**, both of them, because the service uses dual-signed certificates — rather than an individual server or intermediate certificate. Azure doesn't support certificate pinning, and pinned connections break without warning when certificates rotate.
+
+Select **Save & test**. The test can fail until the syncer writes the first real token; once it succeeds Grafana reports `Database Connection OK`.
+
+### 4. Enable the syncer
+
+Turn on the data source syncer with the suffix you used, as described in [Enable and disable the syncer](#enable-and-disable-the-syncer) below. The syncer writes the first token immediately, and the data source starts returning data.
+
 ## Set up a Prometheus data source
 
 Use this when you query [Azure Monitor managed service for Prometheus](https://learn.microsoft.com/azure/azure-monitor/metrics/prometheus-metrics-overview) from Grafana and want the syncer to keep the query token fresh.
@@ -340,9 +452,12 @@ If a data source still fails after enabling the syncer, check the items in [Note
 
 - **First sync is immediate; refreshes are hourly.** The syncer writes a token as soon as you enable the feature, then rewrites a fresh one roughly every hour — comfortably inside the ~1-hour Entra ID token lifetime.
 - **Only suffix-matched data sources are touched.** If a data source isn't being synced, check that its **Name** ends with the configured suffix exactly, and that the suffix in `properties.datasourceSyncer.suffix` matches.
-- **The managed identity needs backend access, and it's the same identity for every data source.** An instance has a single managed identity, so that one identity must hold every grant: a Microsoft Entra-backed PostgreSQL role with the required database privileges for PostgreSQL, the **Monitoring Data Reader** role on the Azure Monitor workspace for Prometheus, and workspace service-principal registration plus `CAN_USE` on the SQL warehouse for Databricks. A fresh token is useless if the identity can't read the backend.
-- **PostgreSQL needs Microsoft Entra authentication.** The syncer is for Azure Database for PostgreSQL flexible server data sources that accept an Entra token as the password. A regular username/password PostgreSQL data source doesn't need the syncer.
-- **PostgreSQL networking still applies.** The syncer refreshes the credential only; it doesn't change firewall rules, private networking, DNS, or server SSL requirements. Azure Database for PostgreSQL flexible server should use `sslmode=require` from Grafana.
+- **The managed identity needs backend access, and it's the same identity for every data source.** An instance has a single managed identity, so that one identity must hold every grant: a Microsoft Entra-backed PostgreSQL role with the required database privileges for PostgreSQL, a Microsoft Entra-backed MySQL user with the required privileges for MySQL, the **Monitoring Data Reader** role on the Azure Monitor workspace for Prometheus, and workspace service-principal registration plus `CAN_USE` on the SQL warehouse for Databricks. A fresh token is useless if the identity can't read the backend.
+- **PostgreSQL and MySQL need Microsoft Entra authentication.** The syncer is for Azure Database for PostgreSQL flexible server and Azure Database for MySQL flexible server data sources that accept an Entra token as the password. A regular username/password data source doesn't need the syncer.
+- **PostgreSQL and MySQL networking still applies.** The syncer refreshes the credential only; it doesn't change firewall rules, private networking, DNS, or server TLS requirements. Azure Database for PostgreSQL flexible server should use `sslmode=require` from Grafana; Azure Database for MySQL flexible server requires an encrypted connection on port `3306`.
+- **MySQL allows one Microsoft Entra administrator, and it must be a user or group.** A managed identity can't be the Entra administrator of a MySQL flexible server, so the Grafana identity has to be added as an Entra-backed database user by whoever holds the administrator assignment — and the server needs a user-assigned managed identity with Microsoft Graph read access (or the **Directory Readers** role) before any of that works. Both differ from PostgreSQL. Plan the administrator assignment before you grant the Grafana identity access.
+- **MySQL user names are capped at 32 characters.** The cap is hardcoded in MySQL. If the Grafana managed identity's name is longer, create the database user under a shorter name and set that name as the data source's **Username** — the syncer detects the over-length name it derived from the token, preserves your value, and logs a warning instead of writing a name MySQL can't hold.
+- **The syncer owns the MySQL connection options.** It turns **Allow Cleartext Passwords** on every run — Entra token authentication has no alternative — and turns **Skip TLS Verification** on whenever no TLS option is configured at all. Turning **Skip TLS Verification** back off without configuring TLS another way is undone on the next run. To get certificate verification instead, turn on **With CA Cert** and turn **Skip TLS Verification** off in the same edit — the syncer then preserves that configuration, but it never clears a skip-verify flag left behind on its own.
 - **Databricks needs the Grafana Enterprise option** (Standard tier) — see [Enable Grafana Enterprise](https://learn.microsoft.com/azure/managed-grafana/how-to-grafana-enterprise).
 - **Preview.** The `datasourceSyncer` property and the `2026-05-01-preview` API version are in preview and may change.
 
@@ -359,6 +474,11 @@ If a data source still fails after enabling the syncer, check the items in [Note
 - [Connect with managed identity to Azure Database for PostgreSQL](https://learn.microsoft.com/azure/postgresql/security/security-connect-with-managed-identity)
 - [Manage Microsoft Entra roles in Azure Database for PostgreSQL](https://learn.microsoft.com/azure/postgresql/security/security-manage-entra-users)
 - [Configure the PostgreSQL data source in Grafana](https://grafana.com/docs/grafana/latest/datasources/postgres/configure/)
+- [Microsoft Entra authentication for Azure Database for MySQL flexible server](https://learn.microsoft.com/azure/mysql/security/security-entra-authentication)
+- [Set up Microsoft Entra authentication for Azure Database for MySQL flexible server](https://learn.microsoft.com/azure/mysql/security/security-how-to-entra)
+- [Migrate an application to use passwordless connections with Azure Database for MySQL](https://learn.microsoft.com/azure/developer/java/spring-framework/migrate-mysql-to-passwordless-connection)
+- [Encrypted connectivity using TLS in Azure Database for MySQL flexible server](https://learn.microsoft.com/azure/mysql/security/security-tls)
+- [Configure the MySQL data source in Grafana](https://grafana.com/docs/grafana/latest/datasources/mysql/configure/)
 - [Azure Monitor managed service for Prometheus](https://learn.microsoft.com/azure/azure-monitor/metrics/prometheus-metrics-overview)
 - [Use Azure Monitor managed Prometheus as a Grafana data source](https://learn.microsoft.com/azure/azure-monitor/metrics/prometheus-grafana)
 - [Query Prometheus metrics by using the API and PromQL](https://learn.microsoft.com/azure/azure-monitor/metrics/prometheus-api-promql)
@@ -368,4 +488,4 @@ If a data source still fails after enabling the syncer, check the items in [Note
 - [Enable Grafana Enterprise in Azure Managed Grafana](https://learn.microsoft.com/azure/managed-grafana/how-to-grafana-enterprise)
 - [`Microsoft.Dashboard/grafana` ARM template reference](https://learn.microsoft.com/azure/templates/microsoft.dashboard/grafana)
 
-> **Note — a different approach.** The data source syncer writes credentials into each supported plugin's normal credential location: PostgreSQL gets the `User` field and `Password` field, Prometheus gets an `Authorization` header, and Databricks gets the `Token` field. That is *not* the same as Grafana's built-in Azure authentication. If you'd rather have Grafana manage Entra ID tokens natively (the **Azure Auth** / Managed Identity path), that is a separate, fully supported mechanism documented in [authentication and permissions](https://learn.microsoft.com/azure/managed-grafana/how-to-authentication-permissions) and [data source plugins with managed identity](https://learn.microsoft.com/azure/managed-grafana/how-to-data-source-plugins-managed-identity) — use one or the other on a given data source, not both.
+> **Note — a different approach.** The data source syncer writes credentials into each supported plugin's normal credential location: PostgreSQL and MySQL get the `User` field and `Password` field, Prometheus gets an `Authorization` header, and Databricks gets the `Token` field. That is *not* the same as Grafana's built-in Azure authentication. If you'd rather have Grafana manage Entra ID tokens natively (the **Azure Auth** / Managed Identity path), that is a separate, fully supported mechanism documented in [authentication and permissions](https://learn.microsoft.com/azure/managed-grafana/how-to-authentication-permissions) and [data source plugins with managed identity](https://learn.microsoft.com/azure/managed-grafana/how-to-data-source-plugins-managed-identity) — use one or the other on a given data source, not both. That choice only exists for the plugins that offer native Azure authentication: Grafana's PostgreSQL and MySQL plugins authenticate with a user name and password only, so for those two the syncer is the only way to get a managed identity onto the connection.
