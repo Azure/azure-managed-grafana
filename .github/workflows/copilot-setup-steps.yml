@@ -19,7 +19,7 @@ jobs:
     environment: Copilot
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       
       - name: Setup amg-mcp
         run: |
@@ -29,7 +29,7 @@ jobs:
           echo "Downloaded amg-mcp to $(pwd)/bin/amg-mcp"
 
       - name: Azure login
-        uses: azure/login@v2
+        uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6 # v2.3.1
         with:
           client-id: f8216088-b377-492f-a834-9724b6110732
           tenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
