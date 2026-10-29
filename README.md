@@ -29,6 +29,9 @@ AMG-MCP is a Model Context Protocol (MCP) server that provides programmatic acce
 - **Backup & Restore**: Comprehensive backup and restore operations for Grafana configurations
 - **Image Rendering**: Generate dashboard and panel images for reporting and documentation
 
+## Azure Monitor dashboards with Grafana remote MCP
+
+Query Azure monitoring data through the global remote MCP endpoint at `https://mcp.dashboard.azure.com` without creating an Azure Managed Grafana resource. This endpoint supports Microsoft Entra ID **user authentication only**, through GitHub Copilot OAuth sign-in or a user access token acquired with Azure CLI. See the [Azure Monitor dashboards with Grafana remote MCP guide](helios-mcp.md) for the available tools and setup instructions.
 
 ## Providing feedback
 
