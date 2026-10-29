@@ -20,14 +20,14 @@ No Grafana instance name, subscription ID, resource group, or additional endpoin
 
 - An MCP client that supports remote HTTP servers, such as Visual Studio Code with GitHub Copilot or GitHub Copilot CLI.
 - A Microsoft Entra ID user account with access to the Azure resources you want to query.
-- Appropriate Azure permissions on the target scopes. Monitoring, log, and cost queries require their respective read permissions; signing in to MCP does not grant additional access.
+- Appropriate Azure permissions on the target scopes. Monitoring and log queries require their respective read permissions; signing in to MCP does not grant additional access.
 - For the manual token option, [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) signed in as a **user**.
 
 There is no Azure Managed Grafana resource to provision or assign a Grafana role to.
 
 ## Available MCP tools
 
-The server currently exposes the following 10 tools. All query Azure data; none require a Grafana data source UID.
+The following tools query Azure data; none require a Grafana data source UID.
 
 | Tool name | Description |
 |-----------|-------------|
@@ -40,7 +40,6 @@ The server currently exposes the following 10 tools. All query Azure data; none 
 | `amgmcp_query_activity_log` | Queries management-plane events such as resource updates, deployments, and RBAC changes. |
 | `amgmcp_query_resource_health` | Queries current resource availability or historical availability transitions. |
 | `amgmcp_query_resource_health_events` | Queries service incidents, planned maintenance, and health advisories. |
-| `amgmcp_cost_analysis` | Analyzes Azure costs by service, region, resource type, resource group, or individual resource. |
 
 Unlike the instance-based [AMG-MCP](amg-mcp.md), this endpoint does not expose Grafana dashboard management, Grafana alert management, or tools for other configured Grafana data sources.
 
@@ -169,17 +168,14 @@ Show management-plane changes in subscription <subscription-id> over the last da
 Check the current availability of resource <resource-id>.
 
 Show service-health events updated in the last 30 days for subscription <subscription-id>.
-
-Show the highest-cost resources in subscription <subscription-id> from 10 days ago to 3 days ago.
 ```
 
 ## Query guidance
 
-- **Use explicit scopes.** List accessible subscriptions first, then name the subscription or resource you want to investigate. Cost queries without a subscription ID examine only the first few accessible subscriptions.
+- **Use explicit scopes.** List accessible subscriptions first, then name the subscription or resource you want to investigate.
 - **Bound log queries in KQL.** The log tool does not add a time window. Use a filter such as `where TimeGenerated > ago(1d)` for Log Analytics or `where timestamp > ago(1d)` for Application Insights components.
 - **Replace dashboard variables.** Resource Graph and log queries must contain literal values and time filters, not Grafana macros such as `$__timeFilter` or template variables.
 - **Choose supported metric aggregations.** Discover metric definitions first. Use `Average` for gauges such as capacity or CPU percentage, and `Total` only for accumulating metrics such as transaction counts.
-- **Allow for cost ingestion delays.** Cost Management data can lag by 24-48 hours or more. End the window at least three days ago when you need settled figures.
 - **Check service-health look-back windows.** The service-health events tool filters by an event's last update, not when its impact began. An active incident with no recent update can be absent from a narrow window.
 
 ## Troubleshooting
@@ -187,9 +183,8 @@ Show the highest-cost resources in subscription <subscription-id> from 10 days a
 | Symptom | What to check |
 |---------|---------------|
 | `401 Unauthorized` | Sign in as a user. For manual tokens, request the `https://dashboard.azure.com` resource and obtain a fresh token if it has expired. |
-| `403 Forbidden` or inaccessible resources | Verify the signed-in tenant and the user's Azure permissions on the requested subscription, resource, workspace, or cost scope. A Grafana role assignment is not needed. |
+| `403 Forbidden` or inaccessible resources | Verify the signed-in tenant and the user's Azure permissions on the requested subscription, resource, or workspace. A Grafana role assignment is not needed. |
 | Empty query results | Check the scope, time range, and whether the resource has emitted the requested telemetry. An empty successful query is not necessarily a connection failure. |
-| Cost Management rate limiting | Honor `retryAfterSeconds`, avoid immediate retries, and query one subscription at a time. Stop after three unsuccessful retries and report the rate limit. |
 | `405 Method Not Allowed` when opening the endpoint in a browser | The endpoint accepts MCP HTTP POST requests. A plain browser GET is not an MCP connectivity test; connect with an MCP client. |
 
 ## Links
