@@ -52,6 +52,20 @@ You can connect with either Visual Studio Code with GitHub Copilot or GitHub Cop
 
 Visual Studio Code with GitHub Copilot can handle Microsoft Entra ID OAuth sign-in without a manually configured token.
 
+#### One-click setup
+
+1. Open [Install in VS Code](https://aka.ms/join-dashboard-mcp).
+2. If your browser asks, allow it to open Visual Studio Code.
+3. Review the `azure-monitor-dashboard-mcp` server configuration and select **Install**.
+4. Start the server if needed, then sign in with your Microsoft Entra ID user account when prompted. Use the tenant that contains your Azure resources.
+5. Open Copilot Chat in **Agent** mode and enable the server's tools.
+
+For connection or authentication issues, see [Troubleshooting](#troubleshooting).
+
+The link contains only the server name and HTTP connection settings, not credentials. It adds the VS Code MCP configuration; it does not create an Azure resource or configure GitHub Copilot CLI.
+
+#### Manual setup
+
 1. Add the following server to your workspace's [`.vscode/mcp.json`](.vscode/mcp.json). If the file already contains servers, merge this entry into its `servers` object.
 
    ```json
