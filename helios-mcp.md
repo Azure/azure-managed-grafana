@@ -33,12 +33,12 @@ The following tools query Azure data; none require a Grafana data source UID.
 
 | Tool name | Description |
 |-----------|-------------|
+| `amgmcp_query_resource_log` | Queries logs using KQL for Log Analytics workspaces, Application Insights components, and other Azure resources such as Azure Container Registry. |
+| `amgmcp_query_resource_metric` | Queries Azure Monitor metric values for one or more resources. |
+| `amgmcp_query_application_insights_trace` | Retrieves telemetry for an operation ID and can aggregate a distributed trace across Application Insights components. |
 | `amgmcp_query_azure_subscriptions` | Lists Azure subscriptions accessible to the signed-in user. |
 | `amgmcp_query_resource_graph` | Queries Azure Resource Graph using KQL to discover and inventory resources. |
 | `amgmcp_query_resource_metric_definition` | Lists available metrics, dimensions, supported aggregations, and time grains for a resource. |
-| `amgmcp_query_resource_metric` | Queries Azure Monitor metric values for one or more resources. |
-| `amgmcp_query_resource_log` | Queries logs using KQL for Log Analytics workspaces, Application Insights components, and other Azure resources such as Azure Container Registry. |
-| `amgmcp_query_application_insights_trace` | Retrieves telemetry for an operation ID and can aggregate a distributed trace across Application Insights components. |
 | `amgmcp_query_activity_log` | Queries management-plane events such as resource updates, deployments, and RBAC changes. |
 | `amgmcp_query_resource_health` | Queries current resource availability or historical availability transitions. |
 | `amgmcp_query_resource_health_events` | Queries service incidents, planned maintenance, and health advisories. |
