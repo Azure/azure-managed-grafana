@@ -1,5 +1,7 @@
 # Azure Monitor dashboards with Grafana remote MCP server
 
+> **Quick start:** [One-click connect in VS Code](https://aka.ms/join-dashboard-mcp). Confirm the installation and sign in with your Microsoft Entra ID user account.
+
 Azure Monitor dashboards with Grafana provides a global remote Model Context Protocol (MCP) endpoint for querying Azure monitoring data. **You do not need to create an Azure Managed Grafana resource**, deploy an MCP server, or configure a Grafana data source.
 
 Each tool runs as the signed-in Microsoft Entra ID user, in the tenant they signed in to. The user's own Azure permissions determine which subscriptions, resources, and data are accessible.
@@ -35,7 +37,7 @@ The following tools query Azure data; none require a Grafana data source UID.
 | `amgmcp_query_resource_graph` | Queries Azure Resource Graph using KQL to discover and inventory resources. |
 | `amgmcp_query_resource_metric_definition` | Lists available metrics, dimensions, supported aggregations, and time grains for a resource. |
 | `amgmcp_query_resource_metric` | Queries Azure Monitor metric values for one or more resources. |
-| `amgmcp_query_resource_log` | Queries Log Analytics or Application Insights logs using KQL. |
+| `amgmcp_query_resource_log` | Queries logs using KQL for Log Analytics workspaces, Application Insights components, and other Azure resources such as Azure Container Registry. |
 | `amgmcp_query_application_insights_trace` | Retrieves telemetry for an operation ID and can aggregate a distributed trace across Application Insights components. |
 | `amgmcp_query_activity_log` | Queries management-plane events such as resource updates, deployments, and RBAC changes. |
 | `amgmcp_query_resource_health` | Queries current resource availability or historical availability transitions. |
@@ -159,6 +161,8 @@ Summarize resources by type in subscription <subscription-id>.
 
 List the supported metrics for VM <resource-id>, then show its average CPU over the last hour.
 
+Query logs for Azure Container Registry <resource-id> over the last 24 hours.
+
 Query failed requests in Application Insights <resource-id> over the last 24 hours.
 
 Retrieve the distributed trace for operation <operation-id> in Application Insights <resource-id>.
@@ -173,7 +177,8 @@ Show service-health events updated in the last 30 days for subscription <subscri
 ## Query guidance
 
 - **Use explicit scopes.** List accessible subscriptions first, then name the subscription or resource you want to investigate.
-- **Bound log queries in KQL.** The log tool does not add a time window. Use a filter such as `where TimeGenerated > ago(1d)` for Log Analytics or `where timestamp > ago(1d)` for Application Insights components.
+- **Check log collection.** For resources such as Azure Container Registry, the relevant diagnostic logs must already be collected in Log Analytics and accessible to the signed-in user.
+- **Bound log queries in KQL.** The log tool does not add a time window. Use a filter such as `where TimeGenerated > ago(1d)` for Azure resource logs in Log Analytics or `where timestamp > ago(1d)` for Application Insights components.
 - **Replace dashboard variables.** Resource Graph and log queries must contain literal values and time filters, not Grafana macros such as `$__timeFilter` or template variables.
 - **Choose supported metric aggregations.** Discover metric definitions first. Use `Average` for gauges such as capacity or CPU percentage, and `Total` only for accumulating metrics such as transaction counts.
 - **Check service-health look-back windows.** The service-health events tool filters by an event's last update, not when its impact began. An active incident with no recent update can be absent from a narrow window.
