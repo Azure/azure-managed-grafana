@@ -43,6 +43,8 @@ AMG-MCP provides the following tools for interacting with Azure Managed Grafana:
 | `amgmcp_loki_query` | Queries logs data from a Loki data source using LogQL. |
 | `amgmcp_sql_get_metadata` | Gets metadata for connected Microsoft SQL Server, PostgreSQL, and MySQL data sources, including databases, tables, and column schemas. |
 | `amgmcp_sql_query` | Queries a Microsoft SQL Server, PostgreSQL, or MySQL data source using the data source's SQL dialect. |
+| `amgmcp_clickhouse_get_metadata` | Gets metadata for connected ClickHouse data sources, including databases, tables, and column types, plus each table's engine, sorting key, partition key, TTL, and row count. |
+| `amgmcp_clickhouse_query` | Queries a ClickHouse data source with one read-only statement (`SELECT`, `WITH ... SELECT`, `DESCRIBE`, `SHOW`, or `EXPLAIN`) in ClickHouse SQL. |
 
 ## Samples
 
