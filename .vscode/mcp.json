@@ -1,0 +1,8 @@
+{
+    "servers": {
+        "azure-monitor-dashboard-mcp": {
+            "type": "http",
+            "url": "https://mcp.dashboard.azure.com"
+        }
+    }
+}
