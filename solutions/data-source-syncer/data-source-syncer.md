@@ -36,7 +36,7 @@ The **data source syncer** handles this for you. It is a managed capability buil
 1. You enable the syncer on the Grafana resource and give it a **data source name suffix**.
 2. For each data source whose **Name** ends with that suffix, the syncer acquires a fresh Entra ID token for the Grafana instance's managed identity, scoped to the matching backend service.
 3. It writes the token into that data source's configuration:
-   - **PostgreSQL** — into the **Password** field, and it updates the **User** field to the Grafana managed identity's PostgreSQL role.
+   - **PostgreSQL** — into the **Password** field, and it sets the **User** field to the Grafana managed identity's name, so the identity's PostgreSQL role must have exactly that name (see [Set up an Azure Database for PostgreSQL data source](#set-up-an-azure-database-for-postgresql-data-source)).
    - **MySQL** — into the **Password** field, and it updates the **User** field to the Grafana managed identity's MySQL user. It also turns on the connection options MySQL token auth requires (see [Set up an Azure Database for MySQL data source](#set-up-an-azure-database-for-mysql-data-source)).
    - **Prometheus** — into the `Authorization` HTTP header (`Authorization: Bearer <token>`).
    - **Databricks** — into the **Personal Access Token (PAT)** / `Token` field.
@@ -93,7 +93,9 @@ Note these values for the Grafana data source:
 
 - **Host** — the PostgreSQL server FQDN, for example `<server-name>.postgres.database.azure.com:5432`.
 - **Database** — the database to query.
-- **Managed identity PostgreSQL role** — the PostgreSQL role name mapped to the Grafana managed identity. The syncer writes this into the Grafana data source's **User** field. For a system-assigned Grafana identity, this is often the Grafana resource name.
+- **Managed identity PostgreSQL role** — the PostgreSQL role mapped to the Grafana managed identity. The syncer writes the managed identity's **name** into the data source's **User** field. It derives the name from the token's claims, which for a managed identity is the identity's own name: for a system-assigned Grafana identity that's the Grafana resource name, and for a user-assigned one the identity's name. The role you create in step 2 has to have exactly that name, including case.
+
+> **The role name isn't your choice.** PostgreSQL logs the connection in as the role named in the **User** field, and the syncer always overwrites that field with the managed identity's name. If you map the identity to a role with any other name (for example `grafana_reader`), the login fails, even though the role is bound to the right object ID. Keep this in mind when you translate the steps below into Terraform, Bicep, or your own scripts.
 
 ### 2. Grant the Grafana managed identity database access
 
@@ -102,7 +104,7 @@ The syncer mints a PostgreSQL Entra token for the Grafana instance's managed ide
 - **Least privilege:** connect as an existing PostgreSQL Microsoft Entra administrator, create a non-admin Entra-backed PostgreSQL role for the Grafana managed identity, and grant only the database/schema/table permissions Grafana needs.
 - **Quick validation:** add the Grafana managed identity itself as a PostgreSQL Microsoft Entra administrator. This gives the identity admin privileges and should be narrowed before production use.
 
-For the least-privilege path, get the Grafana managed identity's principal ID and choose the PostgreSQL role name that the syncer will write into the Grafana data source:
+For the least-privilege path, get the Grafana managed identity's principal ID and name. The name becomes the PostgreSQL role name:
 
 ```powershell
 $grafanaResourceId = "/subscriptions/<sub-id>/resourceGroups/<grafana-rg>/providers/Microsoft.Dashboard/grafana/<grafana-name>"
@@ -111,10 +113,12 @@ $grafana = az rest --method get `
   | ConvertFrom-Json
 
 $miPrincipalId = $grafana.identity.principalId
-$postgresRoleName = "<grafana-managed-identity-name>"
+# The role name must equal the managed identity's name. For a system-assigned
+# identity that's the Grafana resource name.
+$postgresRoleName = $grafana.name
 ```
 
-If the Grafana instance uses a user-assigned identity, use the `principalId` for that identity under `identity.userAssignedIdentities` instead of `identity.principalId`.
+If the Grafana instance uses a user-assigned identity, use the `principalId` for that identity under `identity.userAssignedIdentities` instead of `identity.principalId`, and use that identity's name (the last segment of its resource ID) as `$postgresRoleName`.
 
 Then connect to PostgreSQL as an existing Microsoft Entra administrator. Use a PostgreSQL Entra token as the password:
 
@@ -123,7 +127,7 @@ $env:PGPASSWORD = az account get-access-token --resource-type oss-rdbms --query 
 psql "host=<server-name>.postgres.database.azure.com port=5432 dbname=<database-name> user=<entra-admin-user-or-role> sslmode=require"
 ```
 
-Create a role mapped to the Grafana managed identity object ID:
+Create a role mapped to the Grafana managed identity object ID. Replace `<grafana-managed-identity-name>` with the value of `$postgresRoleName`, the identity's exact name:
 
 ```sql
 select * from pg_catalog.pgaadauth_create_principal_with_oid(
@@ -140,7 +144,7 @@ grant select on all tables in schema public to "<grafana-managed-identity-name>"
 alter default privileges in schema public grant select on tables to "<grafana-managed-identity-name>";
 ```
 
-Adjust the schema and grants to match the data Grafana should query. The role name you create here is the value the syncer writes into the Grafana PostgreSQL data source's **User** field.
+Adjust the schema and grants to match the data Grafana should query, but keep the role name as it is: the syncer writes the managed identity's name into the data source's **User** field, so the login only works when the role has that same name.
 
 ### 3. Create the PostgreSQL data source in Grafana
 
@@ -149,7 +153,7 @@ In the Grafana portal, go to **Connections > Data sources > Add new data source*
 - **Name** — give it a name that **ends with your chosen suffix** (for example `azure-postgresql-sync`).
 - **Host URL** — enter the PostgreSQL server FQDN with port `5432`, for example `<server-name>.postgres.database.azure.com:5432`.
 - **Database name** — enter the database to query.
-- **Username** — enter any placeholder value. The syncer **replaces** it with the Grafana managed identity's PostgreSQL role on its next run.
+- **Username** — enter any placeholder value. The syncer **replaces** it with the Grafana managed identity's name on its next run, which is why the PostgreSQL role from step 2 must have that name.
 - **Password** — enter any placeholder value. The syncer **replaces** it with a real Entra ID token on its next run.
 - **TLS/SSL Mode** — select **require**.
 - **PostgreSQL Version** — select the version that matches your server, or the closest supported version in the Grafana UI.
