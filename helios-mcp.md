@@ -181,9 +181,29 @@ For example, the following alternative VS Code configuration prompts for the tok
 
 Start the server and paste the token into the protected input when prompted. Manually supplied tokens expire and are not refreshed by this configuration. Obtain a fresh token and replace the saved input when needed, or use the OAuth configuration for client-managed authentication.
 
+### Claude Code
+
+Claude Code can get the token from Azure CLI each time it connects, so you do not paste or refresh the token yourself. Sign in with `az login`, then add the server to a `.mcp.json` file at the root of your project. Set `headersHelper` to an Azure CLI command that prints the `Authorization` header as JSON:
+
+```json
+{
+  "mcpServers": {
+    "azure-monitor-dashboard": {
+      "type": "http",
+      "url": "https://mcp.dashboard.azure.com",
+      "headersHelper": "az account get-access-token --scope 6f2d169c-08f3-4a4c-a982-bcaf2d038c45/.default --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" -o json"
+    }
+  }
+}
+```
+
+Claude Code runs the command when it connects to the server, and again when a tool call returns `401 Unauthorized`, so it replaces an expired token without a restart. The token is not stored in the file. The command works the same in Bash, PowerShell, and the Windows Command Prompt.
+
+Claude Code runs the headers helper of a project's `.mcp.json` file only after you trust the project folder. To check the connection, run `/mcp` in Claude Code. For more information, see [Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp).
+
 ## Example prompts
 
-After connecting, try these prompts in Copilot Chat or an interactive GitHub Copilot CLI session. Replace placeholders with your own subscription, resource, operation, and dashboard IDs, cluster URL, database, and entity names.
+After connecting, try these prompts in Copilot Chat, an interactive GitHub Copilot CLI session, or Claude Code. Replace placeholders with your own subscription, resource, operation, and dashboard IDs, cluster URL, database, and entity names.
 
 ```text
 List the Azure subscriptions I can access.
