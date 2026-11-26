@@ -144,12 +144,12 @@ Sign in interactively as a user and request a token for the Azure Monitor dashbo
 
 ```bash
 az login
-az account get-access-token --resource https://dashboard.azure.com --query accessToken -o tsv
+az account get-access-token --scope 6f2d169c-08f3-4a4c-a982-bcaf2d038c45/.default --query accessToken -o tsv
 ```
 
 For a specific tenant, use `az login --tenant <tenant-id>` instead of `az login`. Do not use `az login --service-principal` or `az login --identity`; this endpoint supports only user authentication.
 
-The token resource/audience is **`https://dashboard.azure.com`**. MCP clients using OAuth can discover the sign-in configuration through the server's [OAuth protected resource metadata](https://mcp.dashboard.azure.com/.well-known/oauth-protected-resource).
+The token audience is **`6f2d169c-08f3-4a4c-a982-bcaf2d038c45`**, the application ID of the Azure Managed Grafana sign-in app. Request the token by this ID, as shown above. A token requested with `--resource https://dashboard.azure.com` is for the same app but has a different audience, and the endpoint rejects it with `401 Unauthorized`. MCP clients using OAuth discover this scope from the server's [OAuth protected resource metadata](https://mcp.dashboard.azure.com/.well-known/oauth-protected-resource).
 
 ### Configure the bearer token
 
